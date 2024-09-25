@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phòng của tôi - Chủ trọ</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <div
+            class="nav-section-label"
+            style="margin-top: 0.5rem; margin-bottom: 0.5rem"
+          >
+            Quản lý
+          </div>
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-pie"></i> Tổng quan</a
+          >
+          <a href="rooms.html" class="nav-item active"
+            ><i class="fas fa-bed"></i> Phòng của tôi</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-envelope-open-text"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-signature"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-credit-card"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Phòng của tôi</h2>
+          </div>
+          <div class="topbar-right">
+            <a href="room-form.html" class="btn btn-primary btn-sm"
+              ><i class="fas fa-plus"></i> Thêm phòng</a
+            >
+            <div id="userDisplay"></div>
+          </div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Danh sách phòng đã đăng</div>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Phòng</th>
+                    <th>Giá</th>
+                    <th>Khu vực</th>
+                    <th>Trạng thái</th>
+                    <th>Yêu cầu chờ</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="roomsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => loadRooms());
+      async function loadRooms(page = 1) {
+        const tbody = document.getElementById("roomsBody");
+        tbody.innerHTML = App.tableLoading(6);
+        try {
+          const res = await App.api(
+            `/rooms/owner/my-rooms?page=${page}&limit=10`,
+          );
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Chưa đăng phòng nào");
+            return;
+          }
+          tbody.innerHTML = items
+            .map(
+              (r) => `
+          <tr>
+            <td><div class="flex items-center gap-3">
+              <div style="width:48px;height:48px;border-radius:var(--radius-md);overflow:hidden;background:var(--surface-2);flex-shrink:0;">
+                ${r.primary_image ? `<img src="${App.getImageUrl(r.primary_image)}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);"><i class="fas fa-image"></i></div>'}
+              </div>
+              <div><div class="font-semibold">${r.title}</div><div class="text-xs text-muted">${r.city || ""}</div></div>
+            </div></td>
+            <td class="font-semibold">${App.formatCurrency(r.price)}</td>
+            <td class="text-sm">${r.district || ""}, ${r.city || ""}</td>
+            <td>${App.statusBadge(r.status)}</td>
+            <td>${r.pending_requests > 0 ? `<span class="badge badge-warning">${r.pending_requests} mới</span>` : '<span class="text-muted">0</span>'}</td>
+            <td>
+              <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:nowrap;">
+                <a href="../guest/room-detail.html?id=${r.id}" class="btn btn-ghost btn-sm" title="Xem trước"><i class="fas fa-eye"></i></a>
+                <a href="room-form.html?id=${r.id}" class="btn btn-ghost btn-sm" title="Sửa"><i class="fas fa-pen"></i></a>
+                <button class="btn btn-ghost btn-sm" onclick="deleteRoom(${r.id})" title="Xóa" style="color:var(--danger);"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `,
+            )
+            .join("");
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadRooms");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function deleteRoom(id) {
+        if (
+          !(await App.confirm("Xóa phòng này? Hành động không thể hoàn tác."))
+        )
+          return;
+        try {
+          await App.api(`/rooms/${id}`, "DELETE");
+          App.showToast("Đã xóa phòng", "success");
+          loadRooms();
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>

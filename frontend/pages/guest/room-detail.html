@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết phòng - RoomRental</title>
+    <meta name="description" content="Xem chi tiết phòng trọ cho thuê" />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .navbar {
+        font-family: "Outfit", sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem 4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        text-decoration: none;
+      }
+      .nav-brand .icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .btn-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+      }
+      .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        color: #fff;
+      }
+      .btn-gradient {
+        background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+        background-size: 200% auto;
+        color: #fff;
+        border: none;
+        transition: all 0.3s;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+      }
+      .btn-gradient:hover {
+        background-position: right center;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        transform: translateY(-2px);
+        color: #fff;
+      }
+
+      /* Original details CSS */
+      .detail-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+      }
+      .breadcrumb a {
+        color: var(--text-muted);
+      }
+      .breadcrumb a:hover {
+        color: var(--primary);
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 1.5rem;
+      }
+      @media (max-width: 768px) {
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .gallery {
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        background: var(--surface);
+        border: 1px solid var(--border);
+      }
+      .gallery-main {
+        height: 360px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .gallery-main img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .gallery-thumbs {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        overflow-x: auto;
+      }
+      .gallery-thumb {
+        width: 72px;
+        height: 56px;
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        flex-shrink: 0;
+        transition: var(--transition);
+      }
+      .gallery-thumb:hover,
+      .gallery-thumb.active {
+        border-color: var(--primary);
+      }
+      .gallery-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .detail-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: sticky;
+        top: 100px;
+        align-self: start;
+      }
+      .price-card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+      }
+      .price-main {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+      }
+      .price-main span {
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: var(--text-muted);
+      }
+      .owner-card {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        padding: 1.25rem;
+        box-shadow: var(--shadow-sm);
+      }
+      .owner-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        margin-bottom: 1rem;
+      }
+      .section-block {
+        margin-bottom: 2rem;
+      }
+      .section-block h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .section-block h3 i {
+        color: var(--primary);
+        font-size: 1rem;
+      }
+      .desc-text {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.8;
+        white-space: pre-wrap;
+      }
+      .amenity-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .amenity-item {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.6rem 0.85rem;
+        background: var(--primary-light);
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+      .amenity-item i {
+        font-size: 0.8rem;
+      }
+      .detail-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .detail-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: var(--surface-2);
+        border-radius: var(--radius-md);
+      }
+      .detail-info-item i {
+        color: var(--primary);
+        font-size: 0.875rem;
+        width: 1.25rem;
+        text-align: center;
+      }
+      .detail-info-item .label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+      .detail-info-item .value {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .gallery-main {
+        position: relative;
+      }
+      .gallery-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.4);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-size: 1.25rem;
+        z-index: 10;
+      }
+      .gallery-nav:hover {
+        background: rgba(0, 0, 0, 0.8);
+      }
+      .gallery-nav.prev {
+        left: 1rem;
+      }
+      .gallery-nav.next {
+        right: 1rem;
+      }
+    </style>
+  </head>
+  <body style="background: var(--background)">
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <a href="../../index.html" class="nav-brand">
+        <div class="icon"><i class="fas fa-house-chimney"></i></div>
+        RoomRental
+      </a>
+
+      <div
+        class="nav-main-menu"
+        style="
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 2rem;
+          font-weight: 500;
+        "
+      >
+        <a
+          href="../../index.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Trang chủ</a
+        >
+        <a
+          href="rooms.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tìm phòng</a
+        >
+        <a
+          href="roommates.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tìm ở ghép</a
+        >
+        <a
+          href="pricing.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Bảng giá</a
+        >
+        <a
+          href="news.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tin tức</a
+        >
+      </div>
+
+      <div class="nav-links" id="headerActions">
+        <a href="login.html" class="btn-glass">Đăng nhập</a>
+        <a href="register.html" class="btn-gradient">Đăng ký ngay</a>
+      </div>
+    </nav>
+
+    <div class="detail-page" id="detailPage" style="padding-top: 120px">
+      <div class="breadcrumb">
+        <a href="rooms.html">Phòng trọ</a>
+        <span>/</span>
+        <span id="breadcrumbTitle">Đang tải...</span>
+      </div>
+
+      <div class="detail-grid">
+        <!-- Left: Gallery + Info -->
+        <div>
+          <div class="gallery" id="gallery">
+            <div class="gallery-main" id="mainImageContainer">
+              <button
+                class="gallery-nav prev"
+                onclick="prevImage()"
+                id="btnPrevImage"
+                style="display: none"
+              >
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <div
+                id="mainImage"
+                style="
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <div class="spinner"></div>
+              </div>
+              <button
+                class="gallery-nav next"
+                onclick="nextImage()"
+                id="btnNextImage"
+                style="display: none"
+              >
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            <div class="gallery-thumbs" id="thumbs"></div>
+          </div>
+
+          <div style="margin-top: 1.5rem">
+            <h1
+              style="
+                font-size: 1.375rem;
+                font-weight: 800;
+                margin-bottom: 0.5rem;
+              "
+              id="roomTitle"
+            ></h1>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.375rem;
+                color: var(--text-muted);
+                font-size: 0.875rem;
+                margin-bottom: 1.25rem;
+              "
+              id="roomLocation"
+            >
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+
+            <div class="section-block">
+              <h3><i class="fas fa-info-circle"></i> Thông tin chi tiết</h3>
+              <div class="detail-info-grid" id="detailInfoGrid"></div>
+            </div>
+
+            <div class="section-block">
+              <h3><i class="fas fa-align-left"></i> Mô tả</h3>
+              <div class="desc-text" id="roomDesc">Đang tải...</div>
+            </div>
+
+            <div
+              class="section-block"
+              id="amenitiesSection"
+              style="display: none"
+            >
+              <h3><i class="fas fa-star"></i> Tiện ích</h3>
+              <div class="amenity-grid" id="amenitiesGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Sidebar -->
+        <div class="detail-sidebar">
+          <div class="price-card">
+            <div class="price-main" id="roomPrice">—</div>
+            <div
+              style="
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin-bottom: 1rem;
+              "
+              id="roomDeposit"
+            ></div>
+            <div id="rentalAction">
+              <a href="login.html" class="btn btn-primary btn-block btn-lg">
+                <i class="fas fa-paper-plane"></i> Đăng nhập để gửi yêu cầu thuê
+              </a>
+            </div>
+          </div>
+
+          <div class="owner-card">
+            <div
+              style="
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.75rem;
+              "
+            >
+              Chủ trọ
+            </div>
+            <div class="owner-profile" id="ownerProfile">
+              <div class="avatar avatar-lg" id="ownerAvatar">?</div>
+              <div>
+                <div
+                  style="
+                    font-weight: 700;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                  "
+                >
+                  <span id="ownerName">—</span>
+                  <i
+                    class="fas fa-check-circle"
+                    style="color: #10b981; font-size: 0.85rem"
+                    title="Đã xác minh danh tính"
+                  ></i>
+                </div>
+                <div
+                  style="
+                    font-size: 0.85rem;
+                    color: var(--text-muted);
+                    margin-top: 0.3rem;
+                  "
+                  id="ownerContactContainer"
+                >
+                  <div
+                    id="ownerContactMasked"
+                    style="
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 0.5rem;
+                      background: var(--surface-2);
+                      padding: 0.35rem 0.85rem;
+                      border-radius: 50px;
+                      cursor: pointer;
+                      border: 1px solid var(--border);
+                      transition: all 0.2s;
+                    "
+                    onclick="revealPhone()"
+                    onmouseover="
+                      this.style.borderColor = 'var(--primary)';
+                      this.style.color = 'var(--primary)';
+                    "
+                    onmouseout="
+                      this.style.borderColor = 'var(--border)';
+                      this.style.color = '';
+                    "
+                  >
+                    <i
+                      class="fas fa-phone-alt"
+                      style="color: var(--primary); font-size: 0.8rem"
+                    ></i>
+                    <span
+                      id="maskedPhoneText"
+                      style="font-weight: 600; letter-spacing: 0.5px"
+                      >---</span
+                    >
+                    <span
+                      style="
+                        font-size: 0.75rem;
+                        color: var(--primary);
+                        font-weight: 500;
+                      "
+                      >Bấm để hiện số</span
+                    >
+                  </div>
+                  <div
+                    id="ownerContactRevealed"
+                    style="
+                      display: none;
+                      align-items: center;
+                      gap: 0.5rem;
+                      background: #ecfdf5;
+                      color: #065f46;
+                      border: 1px solid #a7f3d0;
+                      padding: 0.35rem 0.85rem;
+                      border-radius: 50px;
+                    "
+                  >
+                    <i class="fas fa-phone-alt"></i>
+                    <span
+                      id="revealedPhoneText"
+                      style="font-weight: 700; letter-spacing: 0.5px"
+                    ></span>
+                    <a
+                      id="callLink"
+                      href="javascript:void(0)"
+                      style="color: #059669; margin-left: 0.5rem"
+                      title="Copy số điện thoại"
+                      ><i class="fas fa-copy"></i
+                    ></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="owner-card"
+            style="background-color: #fffbeb; border-color: #fde68a"
+          >
+            <div
+              style="
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: #b45309;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <i class="fas fa-shield-alt"></i> Lưu ý an toàn
+            </div>
+            <div style="font-size: 0.85rem; color: #92400e; line-height: 1.6">
+              <ul
+                style="
+                  padding-left: 1.25rem;
+                  margin: 0;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.5rem;
+                "
+              >
+                <li>
+                  <strong>Không chuyển tiền cọc</strong> trước khi xem phòng
+                  trực tiếp.
+                </li>
+                <li>Đọc kỹ các điều khoản trong hợp đồng trước khi ký.</li>
+                <li>
+                  Yêu cầu chủ trọ cung cấp giấy tờ chứng minh quyền sở hữu.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="owner-card" id="mapCard">
+            <div
+              style="
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <i class="fas fa-map"></i> Bản đồ khu vực
+            </div>
+            <div
+              style="
+                width: 100%;
+                height: 200px;
+                border-radius: var(--radius-md);
+                overflow: hidden;
+                background: #e5e7eb;
+                position: relative;
+              "
+            >
+              <iframe
+                id="mapIframe"
+                width="100%"
+                height="100%"
+                frameborder="0"
+                style="border: 0"
+                allowfullscreen=""
+                aria-hidden="false"
+                tabindex="0"
+              ></iframe>
+            </div>
+          </div>
+
+          <div class="owner-card">
+            <div
+              style="
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.75rem;
+              "
+            >
+              <i class="fas fa-share-alt"></i> Chia sẻ tin đăng
+            </div>
+            <div style="display: flex; gap: 0.5rem">
+              <button
+                class="btn btn-outline"
+                style="flex: 1; color: #1877f2; border-color: #1877f2"
+                onclick="App.showToast('Đã chia sẻ qua Facebook', 'success')"
+              >
+                <i class="fab fa-facebook-f"></i> Facebook
+              </button>
+              <button
+                class="btn btn-outline"
+                style="flex: 1; color: #0088cc; border-color: #0088cc"
+                onclick="App.showToast('Đã chia sẻ qua Zalo', 'success')"
+              >
+                <i class="fas fa-comment-dots"></i> Zalo
+              </button>
+              <button
+                class="btn btn-outline"
+                style="
+                  width: 42px;
+                  padding: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+                onclick="
+                  navigator.clipboard.writeText(window.location.href);
+                  App.showToast('Đã copy đường dẫn', 'success');
+                "
+                title="Copy Link"
+              >
+                <i class="fas fa-link"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rental Request Modal -->
+    <div class="modal-overlay" id="rentalModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Gửi yêu cầu thuê phòng</div>
+            <div class="modal-subtitle">Nhập lời nhắn gửi đến chủ trọ</div>
+          </div>
+          <button class="modal-close" onclick="App.closeModal('rentalModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Ghi chú / Lời nhắn</label>
+            <textarea
+              id="rentalNote"
+              class="form-control"
+              rows="4"
+              placeholder="Giới thiệu bản thân, yêu cầu xem phòng, thời gian dọn vào dự kiến..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="App.closeModal('rentalModal')"
+          >
+            Hủy
+          </button>
+          <button class="btn btn-primary" onclick="submitRentalRequest()">
+            <i class="fas fa-paper-plane"></i> Gửi yêu cầu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let roomData = null;
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadRoomDetail();
+      });
+
+      async function loadRoomDetail() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        if (!id) {
+          document.getElementById("detailPage").innerHTML = App.emptyState(
+            "exclamation-triangle",
+            "Không tìm thấy phòng",
+            "ID phòng không hợp lệ",
+          );
+          return;
+        }
+
+        try {
+          const res = await App.api(`/rooms/${id}`);
+          roomData = res.data;
+          renderRoom(roomData);
+        } catch (e) {
+          document.getElementById("detailPage").innerHTML = App.emptyState(
+            "exclamation-triangle",
+            "Lỗi",
+            "Không thể tải thông tin phòng",
+          );
+        }
+      }
+
+      function renderRoom(room) {
+        document.title = `${room.title} - RoomRental`;
+        document.getElementById("breadcrumbTitle").textContent = room.title;
+        document.getElementById("roomTitle").textContent = room.title;
+        const locationParts = [room.street, room.district, room.city].filter(
+          Boolean,
+        );
+        document.getElementById("roomLocation").innerHTML =
+          `<i class="fas fa-map-marker-alt"></i> ${locationParts.join(", ") || "N/A"}`;
+        document.getElementById("roomDesc").textContent =
+          room.description || "Không có mô tả";
+        document.getElementById("roomPrice").innerHTML =
+          `${App.formatCurrency(room.price)} <span>/tháng</span>`;
+        document.getElementById("roomDeposit").textContent = "";
+
+        // Gallery
+        const images = room.images || [];
+        if (images.length > 0) {
+          const baseUrl = App.config.apiUrl.replace("/api", "");
+          document.getElementById("mainImage").innerHTML =
+            `<img src="${App.getImageUrl(images[0].image_url)}" alt="${room.title}" style="width:100%;height:100%;object-fit:cover;">`;
+          document.getElementById("thumbs").innerHTML = images
+            .map(
+              (img, i) =>
+                `<div class="gallery-thumb ${i === 0 ? "active" : ""}" onclick="selectImage(${i})"><img src="${App.getImageUrl(img.image_url)}" alt=""></div>`,
+            )
+            .join("");
+          if (images.length > 1) {
+            document.getElementById("btnPrevImage").style.display = "flex";
+            document.getElementById("btnNextImage").style.display = "flex";
+            startAutoplay();
+          }
+        } else {
+          document.getElementById("mainImage").innerHTML =
+            `<div style="color:var(--text-light);"><i class="fas fa-image" style="font-size:4rem;"></i><div style="margin-top:0.5rem;font-size:0.875rem;">Chưa có hình ảnh</div></div>`;
+        }
+
+        // Info grid — 3NF schema fields
+        document.getElementById("detailInfoGrid").innerHTML = `
+        <div class="detail-info-item"><i class="fas fa-expand-arrows-alt"></i><div><div class="label">Diện tích</div><div class="value">${room.area || "—"} m²</div></div></div>
+        <div class="detail-info-item"><i class="fas fa-map-marker-alt"></i><div><div class="label">Quận/Huyện</div><div class="value">${room.district || "—"}</div></div></div>
+        <div class="detail-info-item"><i class="fas fa-city"></i><div><div class="label">Thành phố</div><div class="value">${room.city || "—"}</div></div></div>
+        <div class="detail-info-item"><i class="fas fa-calendar"></i><div><div class="label">Ngày đăng</div><div class="value">${App.formatDate(room.created_at)}</div></div></div>
+      `;
+
+        // Amenities — boolean fields from RoomAmenities (1-1)
+        const am = room.amenities || {};
+        const amenityList = [];
+        if (am.wifi) amenityList.push({ icon: "fa-wifi", label: "WiFi" });
+        if (am.parking)
+          amenityList.push({ icon: "fa-car", label: "Bãi đỗ xe" });
+        if (am.air_conditioner)
+          amenityList.push({ icon: "fa-snowflake", label: "Điều hòa" });
+        if (am.private_bathroom)
+          amenityList.push({ icon: "fa-bath", label: "Phòng tắm riêng" });
+        if (am.kitchen) amenityList.push({ icon: "fa-utensils", label: "Bếp" });
+
+        if (amenityList.length > 0) {
+          document.getElementById("amenitiesSection").style.display = "";
+          document.getElementById("amenitiesGrid").innerHTML = amenityList
+            .map(
+              (a) =>
+                `<div class="amenity-item"><i class="fas ${a.icon}"></i> ${a.label}</div>`,
+            )
+            .join("");
+        }
+
+        // Owner — uses name field (3NF)
+        const ownerName = room.owner_name || "Chủ trọ";
+        document.getElementById("ownerName").textContent = ownerName;
+        document.getElementById("ownerAvatar").textContent =
+          App.getInitials(ownerName);
+
+        if (room.owner_phone) {
+          const phoneStr = String(room.owner_phone);
+          const masked = phoneStr.substring(0, 4) + " *** ***";
+          document.getElementById("maskedPhoneText").textContent = masked;
+          document.getElementById("revealedPhoneText").textContent = phoneStr;
+          const callBtn = document.getElementById("callLink");
+          callBtn.onclick = (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(phoneStr);
+            App.showToast("Đã copy số điện thoại", "success");
+          };
+        } else {
+          document.getElementById("maskedPhoneText").textContent =
+            "Chưa cập nhật SĐT";
+          const maskedDiv = document.getElementById("ownerContactMasked");
+          maskedDiv.onclick = null;
+          maskedDiv.style.cursor = "default";
+          maskedDiv.querySelector("span:last-child").style.display = "none";
+        }
+
+        // Map Iframe Update
+        const mapLocation = `${room.street ? room.street + ", " : ""}${room.district || ""}, ${room.city || ""}`;
+        if (mapLocation.replace(/,/g, "").trim() !== "") {
+          document.getElementById("mapIframe").src =
+            `https://maps.google.com/maps?q=${encodeURIComponent(mapLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+        } else {
+          document.getElementById("mapCard").style.display = "none";
+        }
+
+        // Rental action — Role-based rendering
+        const rentalActionDiv = document.getElementById("rentalAction");
+
+        if (!App.isLoggedIn()) {
+          // Keep default "Đăng nhập để gửi yêu cầu thuê"
+        } else {
+          const role = (App.state.user.role || "").toUpperCase();
+
+          if (role === "USER") {
+            rentalActionDiv.innerHTML = `
+            <button class="btn btn-primary btn-block btn-lg" onclick="App.openModal('rentalModal')">
+              <i class="fas fa-paper-plane"></i> Gửi yêu cầu thuê phòng
+            </button>
+          `;
+          } else if (role === "OWNER") {
+            if (roomData.owner_id === App.state.user.id) {
+              rentalActionDiv.innerHTML = `
+              <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <a href="../owner/room-form.html?id=${roomData.id}" class="btn btn-primary btn-block btn-lg">
+                  <i class="fas fa-pen"></i> Sửa phòng này
+                </a>
+                <a href="../owner/rooms.html" class="btn btn-secondary btn-block">
+                  <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                </a>
+              </div>
+            `;
+            } else {
+              rentalActionDiv.innerHTML = `
+              <div class="text-muted" style="text-align:center; font-size:0.9rem; padding: 1rem 0;">
+                <i class="fas fa-info-circle"></i> Bạn không thể thuê phòng vì bạn đang đăng nhập là Chủ trọ.
+              </div>
+            `;
+            }
+          } else if (role === "ADMIN") {
+            rentalActionDiv.innerHTML = `
+            <div class="text-muted" style="text-align:center; font-size:0.9rem; padding: 1rem 0;">
+              <i class="fas fa-shield-alt"></i> Chế độ xem của Quản trị viên
+            </div>
+          `;
+          }
+        }
+      }
+
+      function revealPhone() {
+        if (!roomData || !roomData.owner_phone) return;
+        document.getElementById("ownerContactMasked").style.display = "none";
+        document.getElementById("ownerContactRevealed").style.display =
+          "inline-flex";
+      }
+
+      let currentImageIndex = 0;
+      let autoplayInterval = null;
+
+      function startAutoplay() {
+        stopAutoplay();
+        if (roomData && roomData.images && roomData.images.length > 1) {
+          autoplayInterval = setInterval(() => nextImage(true), 3000);
+        }
+      }
+
+      function stopAutoplay() {
+        if (autoplayInterval) {
+          clearInterval(autoplayInterval);
+          autoplayInterval = null;
+        }
+      }
+
+      function nextImage(fromAutoplay = false) {
+        if (!roomData || !roomData.images) return;
+        currentImageIndex = (currentImageIndex + 1) % roomData.images.length;
+        selectImage(currentImageIndex, fromAutoplay);
+      }
+
+      function prevImage(fromAutoplay = false) {
+        if (!roomData || !roomData.images) return;
+        currentImageIndex =
+          (currentImageIndex - 1 + roomData.images.length) %
+          roomData.images.length;
+        selectImage(currentImageIndex, fromAutoplay);
+      }
+
+      function selectImage(index, fromAutoplay = false) {
+        if (!fromAutoplay) stopAutoplay();
+        const images = roomData.images || [];
+        if (images[index]) {
+          currentImageIndex = index;
+          const baseUrl = App.config.apiUrl.replace("/api", "");
+          document.getElementById("mainImage").innerHTML =
+            `<img src="${App.getImageUrl(images[index].image_url)}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+          document
+            .querySelectorAll(".gallery-thumb")
+            .forEach((t, i) => t.classList.toggle("active", i === index));
+        }
+        if (!fromAutoplay) startAutoplay();
+      }
+
+      async function submitRentalRequest() {
+        if (!roomData) return;
+        const data = {
+          room_id: roomData.id,
+          note: document.getElementById("rentalNote").value || null,
+        };
+
+        try {
+          await App.api("/rentals", "POST", data);
+          App.showToast("Gửi yêu cầu thuê thành công!", "success");
+          App.closeModal("rentalModal");
+          document.getElementById("rentalAction").innerHTML =
+            `<button class="btn btn-success btn-block btn-lg" disabled><i class="fas fa-check"></i> Đã gửi yêu cầu</button>`;
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>
