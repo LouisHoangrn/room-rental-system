@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thêm/Sửa Phòng - Chủ trọ</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <div
+            class="nav-section-label"
+            style="margin-top: 0.5rem; margin-bottom: 0.5rem"
+          >
+            Quản lý
+          </div>
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-pie"></i> Tổng quan</a
+          >
+          <a href="rooms.html" class="nav-item"
+            ><i class="fas fa-bed"></i> Phòng của tôi</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-envelope-open-text"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-signature"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-credit-card"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title" id="pageTitle">Thêm phòng mới</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-body">
+              <form id="roomForm">
+                <div class="form-group">
+                  <label class="form-label"
+                    >Tiêu đề phòng <span class="required">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="title"
+                    class="form-control"
+                    placeholder="VD: Phòng trọ đẹp Quận 1, full nội thất"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Mô tả</label>
+                  <textarea
+                    id="description"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Mô tả chi tiết phòng trọ..."
+                  ></textarea>
+                </div>
+                <div class="form-row cols-2">
+                  <div class="form-group">
+                    <label class="form-label"
+                      >Giá thuê/tháng (₫) <span class="required">*</span></label
+                    >
+                    <input
+                      type="number"
+                      id="price"
+                      class="form-control"
+                      placeholder="3000000"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Diện tích (m²)</label>
+                    <input
+                      type="number"
+                      id="area"
+                      class="form-control"
+                      placeholder="25"
+                      step="0.1"
+                    />
+                  </div>
+                </div>
+                <div class="form-row cols-3">
+                  <div class="form-group">
+                    <label class="form-label"
+                      >Thành phố <span class="required">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="city"
+                      class="form-control"
+                      placeholder="Hồ Chí Minh"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label"
+                      >Quận/Huyện <span class="required">*</span></label
+                    >
+                    <input
+                      type="text"
+                      id="district"
+                      class="form-control"
+                      placeholder="Quận 1"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Đường/Số nhà</label>
+                    <input
+                      type="text"
+                      id="street"
+                      class="form-control"
+                      placeholder="Số 22, Đường Nguyễn Huệ"
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label"
+                    >Hình ảnh phòng (Có thể chọn nhiều ảnh)</label
+                  >
+                  <input
+                    type="file"
+                    id="images"
+                    class="form-control"
+                    accept="image/*"
+                    multiple
+                  />
+                  <div id="imageGallery" class="image-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Tiện ích</label>
+                  <div
+                    style="
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: 1rem;
+                      margin-top: 0.5rem;
+                    "
+                  >
+                    <label
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                      "
+                    >
+                      <input type="checkbox" id="wifi" />
+                      <i class="fas fa-wifi" style="color: var(--primary)"></i>
+                      WiFi
+                    </label>
+                    <label
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                      "
+                    >
+                      <input type="checkbox" id="parking" />
+                      <i class="fas fa-car" style="color: var(--primary)"></i>
+                      Bãi đỗ xe
+                    </label>
+                    <label
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                      "
+                    >
+                      <input type="checkbox" id="air_conditioner" />
+                      <i
+                        class="fas fa-snowflake"
+                        style="color: var(--primary)"
+                      ></i>
+                      Điều hòa
+                    </label>
+                    <label
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                      "
+                    >
+                      <input type="checkbox" id="private_bathroom" />
+                      <i class="fas fa-bath" style="color: var(--primary)"></i>
+                      WC riêng
+                    </label>
+                    <label
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                      "
+                    >
+                      <input type="checkbox" id="kitchen" />
+                      <i
+                        class="fas fa-utensils"
+                        style="color: var(--primary)"
+                      ></i>
+                      Bếp
+                    </label>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 mt-4">
+                  <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i>
+                    <span id="submitText">Đăng phòng</span>
+                  </button>
+                  <a href="rooms.html" class="btn btn-secondary btn-lg">Hủy</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let editId = null;
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const params = new URLSearchParams(window.location.search);
+        editId = params.get("id");
+        if (editId) {
+          document.getElementById("pageTitle").textContent = "Sửa phòng";
+          document.getElementById("submitText").textContent = "Cập nhật";
+          try {
+            const res = await App.api(`/rooms/${editId}`);
+            const r = res.data;
+            document.getElementById("title").value = r.title || "";
+            document.getElementById("description").value = r.description || "";
+            document.getElementById("price").value = r.price || "";
+            document.getElementById("area").value = r.area || "";
+            document.getElementById("city").value = r.city || "";
+            document.getElementById("district").value = r.district || "";
+            document.getElementById("street").value = r.street || "";
+            // Boolean amenities from RoomAmenities (1-1)
+            const am = r.amenities || {};
+            document.getElementById("wifi").checked = !!am.wifi;
+            document.getElementById("parking").checked = !!am.parking;
+            document.getElementById("air_conditioner").checked =
+              !!am.air_conditioner;
+            document.getElementById("private_bathroom").checked =
+              !!am.private_bathroom;
+            document.getElementById("kitchen").checked = !!am.kitchen;
+
+            if (r.images && r.images.length > 0) {
+              renderImages(r.images);
+            }
+          } catch (e) {
+            App.showToast("Không thể tải thông tin phòng", "error");
+          }
+        }
+      });
+
+      function renderImages(images) {
+        const gallery = document.getElementById("imageGallery");
+        gallery.innerHTML = images
+          .map(
+            (img) => `
+        <div class="image-item" id="img-${img.id}">
+          <img src="${App.getImageUrl(img.image_url)}" alt="Room Image">
+          <button type="button" class="delete-btn" onclick="deleteImage(${img.id})" title="Xóa ảnh"><i class="fas fa-times"></i></button>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      async function deleteImage(imageId) {
+        if (!(await App.confirm("Bạn có chắc muốn xóa ảnh này?"))) return;
+        try {
+          await App.api("/rooms/images/" + imageId, "DELETE");
+          document.getElementById("img-" + imageId).remove();
+          App.showToast("Đã xóa ảnh", "success");
+        } catch (e) {}
+      }
+
+      document
+        .getElementById("roomForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const data = {
+            title: document.getElementById("title").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            price: parseFloat(document.getElementById("price").value),
+            area: parseFloat(document.getElementById("area").value) || null,
+            city: document.getElementById("city").value.trim(),
+            district: document.getElementById("district").value.trim(),
+            street: document.getElementById("street").value.trim() || null,
+            wifi: document.getElementById("wifi").checked,
+            parking: document.getElementById("parking").checked,
+            air_conditioner: document.getElementById("air_conditioner").checked,
+            private_bathroom:
+              document.getElementById("private_bathroom").checked,
+            kitchen: document.getElementById("kitchen").checked,
+          };
+
+          try {
+            let roomId = editId;
+            if (editId) {
+              await App.api(`/rooms/${editId}`, "PUT", data);
+              App.showToast("Cập nhật phòng thành công!", "success");
+            } else {
+              const res = await App.api("/rooms", "POST", data);
+              roomId = res.data.id;
+              App.showToast(
+                "Đăng phòng thành công! Chờ Admin duyệt.",
+                "success",
+              );
+            }
+
+            // Upload images if any selected
+            const fileInput = document.getElementById("images");
+            if (fileInput.files.length > 0) {
+              const formData = new FormData();
+              for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append("images", fileInput.files[i]);
+              }
+              await fetch(App.config.apiUrl + "/rooms/" + roomId + "/images", {
+                method: "POST",
+                headers: { Authorization: "Bearer " + App.state.token },
+                body: formData,
+              });
+            }
+
+            setTimeout(() => (window.location.href = "rooms.html"), 2500);
+          } catch (e) {}
+        });
+    </script>
+  </body>
+</html>
