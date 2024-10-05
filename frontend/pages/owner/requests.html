@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yêu cầu thuê - Chủ trọ</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <div
+            class="nav-section-label"
+            style="margin-top: 0.5rem; margin-bottom: 0.5rem"
+          >
+            Quản lý
+          </div>
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-pie"></i> Tổng quan</a
+          >
+          <a href="rooms.html" class="nav-item"
+            ><i class="fas fa-bed"></i> Phòng của tôi</a
+          >
+          <a href="requests.html" class="nav-item active"
+            ><i class="fas fa-envelope-open-text"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-signature"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-credit-card"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Yêu cầu thuê phòng</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <div class="tabs-header mb-4">
+            <button class="tab-btn active" onclick="filterStatus('')">
+              Tất cả
+            </button>
+            <button class="tab-btn" onclick="filterStatus('PENDING')">
+              Chờ xử lý
+            </button>
+            <button class="tab-btn" onclick="filterStatus('APPROVED')">
+              Đã duyệt
+            </button>
+            <button class="tab-btn" onclick="filterStatus('REJECTED')">
+              Đã từ chối
+            </button>
+          </div>
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Phòng</th>
+                    <th>Người thuê</th>
+                    <th>Ghi chú</th>
+                    <th>Ngày gửi</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="requestsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Request Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <div><div class="modal-title">Chi tiết yêu cầu thuê</div></div>
+          <button class="modal-close" onclick="App.closeModal('detailModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="detailContent"></div>
+        <div class="modal-footer" id="detailActions"></div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let currentStatus = "";
+      let currentPage = 1;
+
+      document.addEventListener("DOMContentLoaded", () => loadRequests());
+
+      function filterStatus(status) {
+        currentStatus = status;
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        event.target.classList.add("active");
+        loadRequests(1);
+      }
+
+      async function loadRequests(page = 1) {
+        currentPage = page;
+        const tbody = document.getElementById("requestsBody");
+        tbody.innerHTML = App.tableLoading(6);
+        try {
+          let url = `/rentals/owner-requests?page=${page}&limit=10`;
+          if (currentStatus) url += `&status=${currentStatus}`;
+          const res = await App.api(url);
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Không có yêu cầu nào");
+            return;
+          }
+          tbody.innerHTML = items
+            .map(
+              (r) => `
+          <tr>
+            <td class="font-semibold">${r.room_title || "Phòng #" + r.room_id}</td>
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="avatar avatar-sm">${App.getInitials(r.user_name || "")}</div>
+                <div><div class="font-semibold text-sm">${r.user_name || "—"}</div><div class="text-xs text-muted">${r.user_email || ""}</div></div>
+              </div>
+            </td>
+            <td class="text-sm text-muted">${(r.note || "—").substring(0, 40)}${(r.note || "").length > 40 ? "..." : ""}</td>
+            <td>${App.formatDate(r.created_at)}</td>
+            <td>${App.statusBadge(r.status)}</td>
+            <td>
+              ${
+                r.status === "PENDING"
+                  ? `
+                <div class="flex gap-2">
+                  <button class="btn btn-success btn-sm" onclick="approveRequest(${r.id})"><i class="fas fa-check"></i> Duyệt</button>
+                  <button class="btn btn-danger btn-sm" onclick="rejectRequest(${r.id})"><i class="fas fa-times"></i> Từ chối</button>
+                </div>
+              `
+                  : `<button class="btn btn-ghost btn-sm" onclick="viewDetail(${r.id})"><i class="fas fa-eye"></i></button>`
+              }
+            </td>
+          </tr>
+        `,
+            )
+            .join("");
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadRequests");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function viewDetail(id) {
+        App.openModal("detailModal");
+        try {
+          const res = await App.api(`/rentals/${id}`);
+          const r = res.data;
+          document.getElementById("detailContent").innerHTML = `
+          <div class="info-list">
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-home"></i></div><div class="info-item-content"><div class="info-item-label">Phòng</div><div class="info-item-value">${r.room_title || "Phòng #" + r.room_id}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-user"></i></div><div class="info-item-content"><div class="info-item-label">Người thuê</div><div class="info-item-value">${r.user_name || "—"}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-comment"></i></div><div class="info-item-content"><div class="info-item-label">Ghi chú</div><div class="info-item-value">${r.note || "Không có"}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-info-circle"></i></div><div class="info-item-content"><div class="info-item-label">Trạng thái</div><div class="info-item-value">${App.statusBadge(r.status)}</div></div></div>
+          </div>
+        `;
+          document.getElementById("detailActions").innerHTML =
+            r.status === "PENDING"
+              ? `<button class="btn btn-secondary" onclick="App.closeModal('detailModal')">Đóng</button>
+             <button class="btn btn-danger" onclick="rejectRequest(${r.id});App.closeModal('detailModal')"><i class="fas fa-times"></i> Từ chối</button>
+             <button class="btn btn-success" onclick="approveRequest(${r.id});App.closeModal('detailModal')"><i class="fas fa-check"></i> Chấp nhận</button>`
+              : `<button class="btn btn-secondary" onclick="App.closeModal('detailModal')">Đóng</button>`;
+        } catch (e) {
+          document.getElementById("detailContent").innerHTML =
+            "Lỗi tải dữ liệu";
+        }
+      }
+
+      async function approveRequest(id) {
+        if (!(await App.confirm("Chấp nhận yêu cầu thuê này?"))) return;
+        try {
+          await App.api(`/rentals/${id}/approve`, "PUT");
+          App.showToast("Đã chấp nhận yêu cầu!", "success");
+          loadRequests(currentPage);
+        } catch (e) {}
+      }
+
+      async function rejectRequest(id) {
+        if (!(await App.confirm("Từ chối yêu cầu thuê này?"))) return;
+        try {
+          await App.api(`/rentals/${id}/reject`, "PUT");
+          App.showToast("Đã từ chối yêu cầu", "success");
+          loadRequests(currentPage);
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>
