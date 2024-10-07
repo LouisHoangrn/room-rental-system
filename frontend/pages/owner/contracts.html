@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hợp đồng - Chủ trọ</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <div
+            class="nav-section-label"
+            style="margin-top: 0.5rem; margin-bottom: 0.5rem"
+          >
+            Quản lý
+          </div>
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-pie"></i> Tổng quan</a
+          >
+          <a href="rooms.html" class="nav-item"
+            ><i class="fas fa-bed"></i> Phòng của tôi</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-envelope-open-text"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item active"
+            ><i class="fas fa-file-signature"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-credit-card"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Hợp đồng</h2>
+          </div>
+          <div class="topbar-right">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="App.openModal('createContract')"
+            >
+              <i class="fas fa-plus"></i> Tạo hợp đồng
+            </button>
+            <div id="userDisplay"></div>
+          </div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Phòng</th>
+                    <th>Người thuê</th>
+                    <th>Thời hạn</th>
+                    <th>Tiền thuê</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="contractsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Contract Modal -->
+    <div class="modal-overlay" id="createContract">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Tạo hợp đồng thuê</div>
+            <div class="modal-subtitle">
+              Chọn yêu cầu đã duyệt để tạo hợp đồng
+            </div>
+          </div>
+          <button
+            class="modal-close"
+            onclick="App.closeModal('createContract')"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label"
+              >Yêu cầu thuê đã duyệt <span class="required">*</span></label
+            >
+            <select id="rentalRequestId" class="form-control">
+              <option value="">Đang tải...</option>
+            </select>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label"
+                >Ngày bắt đầu <span class="required">*</span></label
+              >
+              <input type="date" id="startDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Ngày kết thúc <span class="required">*</span></label
+              >
+              <input type="date" id="endDate" class="form-control" required />
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label"
+                >Tiền thuê hàng tháng (₫) <span class="required">*</span></label
+              >
+              <input
+                type="number"
+                id="monthlyRent"
+                class="form-control"
+                placeholder="3000000"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tiền cọc (₫)</label>
+              <input
+                type="number"
+                id="depositAmount"
+                class="form-control"
+                placeholder="3000000"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Điều khoản hợp đồng</label>
+            <textarea
+              id="terms"
+              class="form-control"
+              rows="4"
+              placeholder="Các điều khoản, quy định..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="App.closeModal('createContract')"
+          >
+            Hủy
+          </button>
+          <button class="btn btn-primary" onclick="createContract()">
+            <i class="fas fa-file-contract"></i> Tạo hợp đồng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contract Detail Modal -->
+    <div class="modal-overlay" id="contractModal">
+      <div class="modal" style="max-width: 600px">
+        <div class="modal-header">
+          <div><div class="modal-title">Chi tiết Hợp đồng</div></div>
+          <button class="modal-close" onclick="App.closeModal('contractModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="contractDetail">
+          <!-- Content injected by JS -->
+        </div>
+        <div class="modal-footer" id="contractActions">
+          <button
+            class="btn btn-secondary"
+            onclick="App.closeModal('contractModal')"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        loadContracts();
+        loadApprovedRequests();
+      });
+
+      async function loadApprovedRequests() {
+        try {
+          const [res, contractsRes] = await Promise.all([
+            App.api("/rentals/owner-requests?status=approved&limit=50"),
+            App.api("/contracts/owner/my-contracts?limit=100"),
+          ]);
+
+          const items = res.data || [];
+          const contracts = contractsRes.data || [];
+          const usedRequestIds = contracts.map((c) => c.rental_request_id);
+
+          // Filter out requests that already have a contract
+          const availableRequests = items.filter(
+            (r) => !usedRequestIds.includes(r.id),
+          );
+
+          const select = document.getElementById("rentalRequestId");
+          select.innerHTML = '<option value="">-- Chọn yêu cầu --</option>';
+          availableRequests.forEach((r) => {
+            select.innerHTML += `<option value="${r.id}">${r.room_title || "Phòng #" + r.room_id} — ${r.user_name || ""}</option>`;
+          });
+        } catch (e) {}
+      }
+
+      async function loadContracts(page = 1) {
+        const tbody = document.getElementById("contractsBody");
+        tbody.innerHTML = App.tableLoading(6);
+        try {
+          const res = await App.api(
+            `/contracts/owner/my-contracts?page=${page}&limit=10`,
+          );
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Chưa có hợp đồng");
+            return;
+          }
+          tbody.innerHTML = items
+            .map(
+              (c) => `
+          <tr>
+            <td class="font-semibold">${c.room_title || "Phòng #" + c.room_id}</td>
+            <td>${c.user_name || "—"}</td>
+            <td class="text-sm">${App.formatDate(c.start_date)} → ${App.formatDate(c.end_date)}</td>
+            <td class="font-semibold">${App.formatCurrency(c.monthly_rent)}</td>
+            <td>${App.statusBadge(c.status)}</td>
+            <td>
+              <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:nowrap;">
+                <button class="btn btn-ghost btn-sm" onclick="viewContract(${c.id})"><i class="fas fa-eye"></i></button>
+                ${c.status === "ACTIVE" ? `<button class="btn btn-danger btn-sm" onclick="terminateContract(${c.id})"><i class="fas fa-ban"></i> Chấm dứt</button>` : ""}
+                ${c.status === "PENDING" ? `<span class="text-sm text-muted whitespace-nowrap"><i class="fas fa-clock"></i> Chờ người thuê ký</span>` : ""}
+              </div>
+            </td>
+          </tr>
+        `,
+            )
+            .join("");
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadContracts");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function viewContract(id) {
+        App.openModal("contractModal");
+        document.getElementById("contractDetail").innerHTML =
+          '<div class="text-center" style="padding:2rem;"><div class="spinner"></div></div>';
+        try {
+          const res = await App.api(`/contracts/${id}`);
+          const c = res.data;
+          document.getElementById("contractDetail").innerHTML = `
+          <div class="info-list">
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-home"></i></div><div class="info-item-content"><div class="info-item-label">Phòng</div><div class="info-item-value">${c.room_title || "Phòng #" + c.room_id}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-user"></i></div><div class="info-item-content"><div class="info-item-label">Người thuê</div><div class="info-item-value">${c.user_name || "—"}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-calendar"></i></div><div class="info-item-content"><div class="info-item-label">Thời hạn</div><div class="info-item-value">${App.formatDate(c.start_date)} → ${App.formatDate(c.end_date)}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-money-bill"></i></div><div class="info-item-content"><div class="info-item-label">Tiền thuê</div><div class="info-item-value">${App.formatCurrency(c.monthly_rent)}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-coins"></i></div><div class="info-item-content"><div class="info-item-label">Tiền cọc</div><div class="info-item-value">${App.formatCurrency(c.deposit_amount)}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-info-circle"></i></div><div class="info-item-content"><div class="info-item-label">Trạng thái</div><div class="info-item-value">${App.statusBadge(c.status)}</div></div></div>
+          </div>
+          ${c.terms ? `<div style="margin-top:1.25rem;"><strong>Điều khoản:</strong><div class="desc-text" style="margin-top:0.5rem;background:var(--surface-2);padding:1rem;border-radius:var(--radius-md);white-space:pre-wrap;word-break:break-word;">${c.terms}</div></div>` : ""}
+        `;
+        } catch (e) {
+          document.getElementById("contractDetail").innerHTML =
+            "Lỗi tải dữ liệu";
+        }
+      }
+
+      async function createContract() {
+        const rental_request_id = parseInt(
+          document.getElementById("rentalRequestId").value,
+        );
+        if (!rental_request_id) {
+          App.showToast("Vui lòng chọn yêu cầu thuê", "warning");
+          return;
+        }
+        const data = {
+          rental_request_id,
+          start_date: document.getElementById("startDate").value,
+          end_date: document.getElementById("endDate").value,
+          monthly_rent: parseFloat(
+            document.getElementById("monthlyRent").value,
+          ),
+          deposit_amount:
+            parseFloat(document.getElementById("depositAmount").value) || 0,
+          terms: document.getElementById("terms").value,
+        };
+        if (!data.start_date || !data.end_date || !data.monthly_rent) {
+          App.showToast("Vui lòng điền đầy đủ thông tin", "warning");
+          return;
+        }
+        try {
+          await App.api("/contracts", "POST", data);
+          App.showToast("Tạo hợp đồng thành công!", "success");
+          App.closeModal("createContract");
+          loadContracts();
+          loadApprovedRequests();
+        } catch (e) {}
+      }
+
+      async function terminateContract(id) {
+        if (
+          !(await App.confirm(
+            "Chấm dứt hợp đồng này? Hành động không thể hoàn tác.",
+          ))
+        )
+          return;
+        try {
+          await App.api(`/contracts/${id}/terminate`, "PUT");
+          App.showToast("Đã chấm dứt hợp đồng", "success");
+          loadContracts();
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>
