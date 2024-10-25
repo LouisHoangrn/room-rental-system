@@ -1,0 +1,614 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hồ sơ ghép & Lời mời - Người thuê</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .tag-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--surface-2);
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.85rem;
+        color: var(--text-color);
+        user-select: none;
+      }
+      .tag-chip:hover {
+        background: var(--surface-3);
+      }
+      .tag-chip.active {
+        background: var(--primary-light);
+        border-color: var(--primary);
+        color: var(--primary);
+        font-weight: 600;
+      }
+      .tag-chip input[type="checkbox"] {
+        display: none;
+      }
+      .tag-chip i {
+        font-size: 0.9rem;
+      }
+      .tag-chip.active i.fa-plus::before {
+        content: "\f00c"; /* FontAwesome check icon */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-home"></i> Tổng quan</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-paper-plane"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-contract"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-wallet"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Roommate</div>
+          <a href="roommate-profile.html" class="nav-item active"
+            ><i class="fas fa-id-card"></i> Hồ sơ ghép & Lời mời</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ Trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Hồ sơ ghép & Lời mời</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <!-- Tabs -->
+          <div class="tabs-header mb-4">
+            <button class="tab-btn active" onclick="switchTab('profile')">
+              <i class="fas fa-id-card"></i> Hồ sơ cá nhân
+            </button>
+            <button class="tab-btn" onclick="switchTab('sent')">
+              <i class="fas fa-paper-plane"></i> Đã gửi
+            </button>
+            <button class="tab-btn" onclick="switchTab('received')">
+              <i class="fas fa-inbox"></i> Đã nhận
+            </button>
+          </div>
+
+          <div id="tabProfile" class="tab-panel active">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Thông tin cá nhân ở ghép</div>
+                <span class="badge badge-secondary" id="profileStatus"
+                  >Chưa tạo</span
+                >
+              </div>
+              <div class="card-body">
+                <form id="profileForm">
+                  <div
+                    class="form-group"
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      background: var(--surface-2);
+                      padding: 1rem;
+                      border-radius: var(--radius-md);
+                      margin-bottom: 1.5rem;
+                    "
+                  >
+                    <div>
+                      <strong style="display: block; font-size: 1.05rem"
+                        >Trạng thái tìm kiếm</strong
+                      >
+                      <span class="text-sm text-muted"
+                        >Bật để cho phép người khác tìm thấy hồ sơ của bạn và
+                        gửi lời mời ghép đôi.</span
+                      >
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="is_search_active" checked />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="form-row cols-2">
+                    <div class="form-group">
+                      <label class="form-label">Giới tính</label>
+                      <select id="gender" class="form-control">
+                        <option value="MALE">Nam</option>
+                        <option value="FEMALE">Nữ</option>
+                        <option value="OTHER">Khác</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Ngày sinh</label>
+                      <input type="date" id="birth_date" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Ngân sách (₫/tháng)</label>
+                    <input
+                      type="number"
+                      id="budget"
+                      class="form-control"
+                      placeholder="1500000"
+                    />
+                  </div>
+                  <div class="form-row cols-2">
+                    <div class="form-group">
+                      <label class="form-label">Giờ ngủ</label>
+                      <select id="sleep_time" class="form-control">
+                        <option value="FLEXIBLE">Linh hoạt</option>
+                        <option value="EARLY">Dậy sớm / Ngủ sớm</option>
+                        <option value="LATE">Thức khuya</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Lịch làm việc</label>
+                      <select id="work_schedule" class="form-control">
+                        <option value="FLEXIBLE">Linh hoạt</option>
+                        <option value="DAY">Ca ngày</option>
+                        <option value="NIGHT">Ca đêm</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Mức độ sạch sẽ (1-5)</label>
+                    <input
+                      type="range"
+                      id="cleanliness"
+                      min="1"
+                      max="5"
+                      value="3"
+                      class="form-control"
+                      style="padding: 0.375rem; cursor: pointer"
+                    />
+                    <div class="flex justify-between text-xs text-muted mt-1">
+                      <span>1 - Thoải mái</span><span id="cleanVal">3</span
+                      ><span>5 - Rất sạch</span>
+                    </div>
+                  </div>
+                  <div class="form-row cols-2">
+                    <div class="form-group">
+                      <label class="form-check"
+                        ><input
+                          type="checkbox"
+                          id="is_smoking"
+                          class="form-check-input"
+                        /><span class="form-check-label"
+                          >Có hút thuốc</span
+                        ></label
+                      >
+                    </div>
+                    <div class="form-group">
+                      <label class="form-check"
+                        ><input
+                          type="checkbox"
+                          id="has_pet"
+                          class="form-check-input"
+                        /><span class="form-check-label"
+                          >Có nuôi thú cưng</span
+                        ></label
+                      >
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Đặc điểm lối sống</label>
+                    <div
+                      id="tagsContainer"
+                      style="display: flex; flex-wrap: wrap; gap: 0.5rem"
+                    >
+                      <span class="text-muted text-sm">Đang tải tags...</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Giới thiệu bản thân</label>
+                    <textarea
+                      id="bio"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Giới thiệu sở thích, tính cách..."
+                    ></textarea>
+                  </div>
+                  <div class="flex gap-3">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-save"></i> Lưu hồ sơ
+                    </button>
+                    <a href="../guest/roommates.html" class="btn btn-outline">
+                      <i class="fas fa-search"></i> Tới trang Tìm bạn ở ghép
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div id="tabSent" class="tab-panel">
+            <div class="card">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Người nhận</th>
+                      <th>Lời nhắn</th>
+                      <th>Ngày gửi</th>
+                      <th>Trạng thái</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sentBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="tabReceived" class="tab-panel">
+            <div class="card">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Người gửi</th>
+                      <th>Lời nhắn</th>
+                      <th>Ngày gửi</th>
+                      <th>Trạng thái</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="receivedBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal-overlay" id="contactModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div><div class="modal-title">Liên hệ ghép phòng</div></div>
+          <button class="modal-close" onclick="App.closeModal('contactModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div
+          class="modal-body"
+          id="contactContent"
+          style="text-align: center; padding: 2rem 1rem"
+        ></div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b, i) =>
+            b.classList.toggle(
+              "active",
+              ["profile", "sent", "received"][i] === tab,
+            ),
+          );
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .getElementById("tab" + tab.charAt(0).toUpperCase() + tab.slice(1))
+          .classList.add("active");
+        if (tab === "sent") loadSent();
+        if (tab === "received") loadReceived();
+      }
+
+      document
+        .getElementById("cleanliness")
+        .addEventListener(
+          "input",
+          (e) =>
+            (document.getElementById("cleanVal").textContent = e.target.value),
+        );
+
+      // Load all available tags from API
+      async function loadTags(selectedIds = []) {
+        try {
+          const res = await App.api("/roommates/tags");
+          const tags = res.data || [];
+          const container = document.getElementById("tagsContainer");
+
+          // Define standard icons mapping for tags based on common names
+          const iconMap = {
+            "Sinh viên": "fa-graduation-cap",
+            "Nhân viên VP": "fa-briefcase",
+            "Sạch sẽ": "fa-broom",
+            "Ít nói": "fa-comment-slash",
+            "Có nuôi pet": "fa-paw",
+            "Thích nấu ăn": "fa-utensils",
+            "Thích thể thao": "fa-basketball",
+            "Đọc sách": "fa-book",
+            "Nghe nhạc": "fa-music",
+            "Xem phim": "fa-film",
+            "Hướng ngoại": "fa-users",
+            "Hướng nội": "fa-user-ninja",
+            "Thức khuya": "fa-moon",
+            "Dậy sớm": "fa-sun",
+            "Không hút thuốc": "fa-ban-smoking",
+            "Thỉnh thoảng nhậu": "fa-beer-mug-empty",
+            "Yêu động vật": "fa-cat",
+            "Thích du lịch": "fa-plane",
+            "Chơi game": "fa-gamepad",
+            "Thích tiệc tùng": "fa-glass-cheers",
+            "Ghét ồn ào": "fa-volume-xmark",
+            "Ăn chay": "fa-leaf",
+            "Sống tối giản": "fa-cube",
+            "Công nghệ": "fa-laptop-code",
+            "Nhiếp ảnh": "fa-camera",
+            "Khách đến chơi": "fa-house-user",
+            "Tập gym": "fa-dumbbell",
+            "Nghệ thuật": "fa-palette",
+            "Dễ tính": "fa-smile",
+            "Sợ bẩn": "fa-pump-medical",
+          };
+
+          container.innerHTML = tags
+            .map((tag) => {
+              const isChecked = selectedIds.includes(tag.id);
+              const activeClass = isChecked ? "active" : "";
+              const checkedAttr = isChecked ? "checked" : "";
+              const icon = iconMap[tag.name] || "fa-tag";
+
+              return `
+              <label class="tag-chip ${activeClass}">
+                <input type="checkbox" class="tag-checkbox" value="${tag.id}" ${checkedAttr} onchange="this.parentElement.classList.toggle('active', this.checked)">
+                <i class="fas ${icon}"></i>
+                <span>${tag.name}</span>
+                <i class="fas fa-plus" style="margin-left: 0.25rem;"></i>
+              </label>
+            `;
+            })
+            .join("");
+        } catch (e) {
+          document.getElementById("tagsContainer").innerHTML =
+            '<span class="text-muted text-sm">Không tải được tags. Vui lòng thử lại.</span>';
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        let selectedTagIds = [];
+        try {
+          const res = await App.api("/roommates/profile");
+          const p = res.data;
+          if (p) {
+            document.getElementById("gender").value = p.gender || "MALE";
+            document.getElementById("birth_date").value = p.birth_date
+              ? p.birth_date.split("T")[0]
+              : "";
+            document.getElementById("budget").value = p.budget || "";
+            document.getElementById("sleep_time").value =
+              p.sleep_time || "FLEXIBLE";
+            document.getElementById("work_schedule").value =
+              p.work_schedule || "DAY";
+            document.getElementById("cleanliness").value = p.cleanliness || 3;
+            document.getElementById("cleanVal").textContent =
+              p.cleanliness || 3;
+            document.getElementById("is_smoking").checked = !!p.is_smoking;
+            document.getElementById("has_pet").checked = !!p.has_pet;
+            document.getElementById("is_search_active").checked =
+              p.is_search_active !== false;
+            document.getElementById("bio").value = p.bio || "";
+            document.getElementById("profileStatus").textContent = "Đã tạo";
+            document.getElementById("profileStatus").className =
+              "badge badge-success";
+            // Get selected tag IDs from profile
+            selectedTagIds = (p.tags || []).map((t) => t.id);
+          }
+        } catch (e) {
+          // Profile not found — that's OK
+        }
+        // Load tags with pre-selected ones
+        await loadTags(selectedTagIds);
+      });
+
+      document
+        .getElementById("profileForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          // Collect selected tag IDs
+          const tagCheckboxes = document.querySelectorAll(
+            ".tag-checkbox:checked",
+          );
+          const tag_ids = Array.from(tagCheckboxes).map((cb) =>
+            parseInt(cb.value),
+          );
+
+          const data = {
+            gender: document.getElementById("gender").value,
+            birth_date: document.getElementById("birth_date").value || null,
+            budget: parseFloat(document.getElementById("budget").value) || null,
+            cleanliness: parseInt(document.getElementById("cleanliness").value),
+            sleep_time: document.getElementById("sleep_time").value,
+            work_schedule: document.getElementById("work_schedule").value,
+            is_smoking: document.getElementById("is_smoking").checked,
+            has_pet: document.getElementById("has_pet").checked,
+            is_search_active:
+              document.getElementById("is_search_active").checked,
+            bio: document.getElementById("bio").value,
+            tag_ids: tag_ids,
+          };
+          try {
+            await App.api("/roommates/profile", "POST", data);
+            App.showToast("Đã lưu hồ sơ ở ghép!", "success");
+            document.getElementById("profileStatus").textContent = "Đã tạo";
+            document.getElementById("profileStatus").className =
+              "badge badge-success";
+          } catch (e) {}
+        });
+
+      async function loadSent() {
+        const tbody = document.getElementById("sentBody");
+        tbody.innerHTML = App.tableLoading(5);
+        try {
+          const res = await App.api("/roommates/requests/sent");
+          const items = res.data || [];
+          tbody.innerHTML =
+            items.length > 0
+              ? items
+                  .map(
+                    (r) => `<tr>
+                <td class="font-semibold">
+                  ${r.receiver_name || "—"}
+                  ${r.receiver_email ? `<br><span class="text-xs text-muted"><i class="fas fa-envelope"></i> ${r.receiver_email}</span>` : ""}
+                </td>
+                <td class="text-sm text-muted">${(r.message || "—").substring(0, 50)}</td>
+                <td>${App.formatDate(r.created_at)}</td>
+                <td>${App.statusBadge(r.status)}</td>
+                <td>
+                  <div style="display:flex; gap:0.5rem; flex-wrap:nowrap;">
+                    ${r.status === "ACCEPTED" ? `<button class="btn btn-primary btn-sm" onclick="showContact('${r.receiver_name}', '${r.receiver_email}', '${r.receiver_phone || ""}')"><i class="fas fa-address-book"></i> Liên hệ</button>` : ""}
+                    <button class="btn btn-danger btn-sm" onclick="cancelRequest(${r.id})" title="Hủy yêu cầu"><i class="fas fa-trash"></i> Hủy</button>
+                  </div>
+                </td>
+              </tr>`,
+                  )
+                  .join("")
+              : App.tableEmpty(5, "Chưa gửi yêu cầu nào");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(5, "Lỗi tải");
+        }
+      }
+
+      async function loadReceived() {
+        const tbody = document.getElementById("receivedBody");
+        tbody.innerHTML = App.tableLoading(5);
+        try {
+          const res = await App.api("/roommates/requests/received");
+          const items = res.data || [];
+          tbody.innerHTML =
+            items.length > 0
+              ? items
+                  .map(
+                    (r) => `
+              <tr>
+                <td class="font-semibold">
+                  ${r.sender_name || "—"}
+                  ${r.sender_email ? `<br><span class="text-xs text-muted"><i class="fas fa-envelope"></i> ${r.sender_email}</span>` : ""}
+                </td>
+                <td class="text-sm text-muted">${(r.message || "—").substring(0, 50)}</td>
+                <td>${App.formatDate(r.created_at)}</td>
+                <td>${App.statusBadge(r.status)}</td>
+                <td>${
+                  r.status === "PENDING"
+                    ? `
+                  <div style="display:flex; gap:0.5rem;">
+                    <button class="btn btn-success btn-sm" onclick="respondRequest(${r.id},'accepted')" title="Chấp nhận"><i class="fas fa-check"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="respondRequest(${r.id},'rejected')" title="Từ chối"><i class="fas fa-times"></i></button>
+                  </div>
+                `
+                    : r.status === "ACCEPTED"
+                      ? `
+                  <div style="display:flex; gap:0.5rem; flex-wrap:nowrap;">
+                    <button class="btn btn-primary btn-sm" onclick="showContact('${r.sender_name}', '${r.sender_email}', '${r.sender_phone || ""}')"><i class="fas fa-address-book"></i> Liên hệ</button>
+                    <button class="btn btn-danger btn-sm" onclick="cancelRequest(${r.id})" title="Hủy ghép đôi"><i class="fas fa-user-slash"></i> Hủy ghép</button>
+                  </div>
+                `
+                      : "—"
+                }</td>
+              </tr>
+            `,
+                  )
+                  .join("")
+              : App.tableEmpty(5, "Chưa nhận yêu cầu nào");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(5, "Lỗi tải");
+        }
+      }
+
+      async function respondRequest(id, status) {
+        const msg =
+          status === "accepted"
+            ? "Chấp nhận yêu cầu này?"
+            : "Từ chối yêu cầu này?";
+        if (!(await App.confirm(msg))) return;
+        try {
+          await App.api(`/roommates/requests/${id}/respond`, "PUT", { status });
+          App.showToast(
+            status === "accepted" ? "Đã chấp nhận!" : "Đã từ chối",
+            "success",
+          );
+          loadReceived();
+        } catch (e) {}
+      }
+
+      async function cancelRequest(id) {
+        if (
+          !(await App.confirm(
+            "Bạn có chắc chắn muốn hủy yêu cầu/ghép đôi này?",
+          ))
+        )
+          return;
+        try {
+          await App.api(`/roommates/requests/${id}/cancel`, "DELETE");
+          App.showToast("Đã hủy thành công!", "success");
+          loadSent();
+          loadReceived();
+        } catch (e) {}
+      }
+
+      function showContact(name, email, phone) {
+        let phoneHtml =
+          phone && phone !== "undefined"
+            ? `<div style="margin-top:1rem; font-size:1.25rem; font-weight:700; color:var(--primary);"><i class="fas fa-phone-alt"></i> ${phone}</div>`
+            : "";
+        document.getElementById("contactContent").innerHTML = `
+          <div class="avatar avatar-lg mx-auto mb-3" style="width:80px;height:80px;font-size:2rem;margin:0 auto 1rem;">${App.getInitials(name)}</div>
+          <h3 style="margin-bottom:0.5rem; font-size:1.5rem;">${name}</h3>
+          <div class="text-muted"><i class="fas fa-envelope"></i> ${email}</div>
+          ${phoneHtml}
+          <div style="margin-top:2rem; background:var(--surface-2); padding:1rem; border-radius:var(--radius-md); font-size:0.95rem; color:var(--text-main); text-align:left; border-left:4px solid var(--primary);">
+            <strong>Gợi ý tiếp theo:</strong> Hai bạn đã được kết nối! Hãy chủ động liên hệ qua Email hoặc Số điện thoại để hẹn gặp, trao đổi về thói quen sinh hoạt và cùng nhau chốt phòng nhé.
+          </div>
+        `;
+        App.openModal("contactModal");
+      }
+    </script>
+  </body>
+</html>
