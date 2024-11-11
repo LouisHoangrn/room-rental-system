@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hỗ trợ - Admin</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-shield-alt"></i></div>
+          Admin Panel
+        </div>
+        <nav class="sidebar-nav">
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Tổng quan</a
+          >
+          <a href="users.html" class="nav-item"
+            ><i class="fas fa-users-cog"></i> Quản lý người dùng</a
+          >
+          <a href="rooms.html" class="nav-item"
+            ><i class="fas fa-building"></i> Duyệt phòng</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item active"
+            ><i class="fas fa-life-ring"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Quản lý hỗ trợ</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <!-- Filter Tabs — UPPERCASE status values -->
+          <div class="tabs-header mb-4">
+            <button class="tab-btn active" onclick="filterRequests('')">
+              Tất cả
+            </button>
+            <button class="tab-btn" onclick="filterRequests('OPEN')">Mở</button>
+            <button class="tab-btn" onclick="filterRequests('IN_PROGRESS')">
+              Đang xử lý
+            </button>
+            <button class="tab-btn" onclick="filterRequests('RESOLVED')">
+              Đã giải quyết
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Người gửi</th>
+                    <th>Tiêu đề</th>
+                    <th>Nội dung</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="requestsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Support Detail Modal -->
+    <div class="modal-overlay" id="supportModal">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-subtitle" id="modalMeta"></div>
+          </div>
+          <button class="modal-close" onclick="App.closeModal('supportModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="requestContent" style="margin-bottom: 1.25rem"></div>
+          <div id="responseSection" style="margin-bottom: 1.25rem"></div>
+          <div style="border-top: 1px solid var(--border); padding-top: 1rem">
+            <div class="form-group" style="margin-bottom: 0.75rem">
+              <label class="form-label">Phản hồi</label>
+              <textarea
+                id="responseText"
+                class="form-control"
+                rows="3"
+                placeholder="Nhập phản hồi cho người dùng..."
+              ></textarea>
+            </div>
+            <div class="flex gap-3 items-center">
+              <button class="btn btn-primary" onclick="sendResponse()">
+                <i class="fas fa-paper-plane"></i> Gửi phản hồi
+              </button>
+              <select
+                id="changeStatus"
+                class="form-control"
+                style="width: auto"
+                onchange="updateRequestStatus()"
+              >
+                <option value="">Đổi trạng thái...</option>
+                <option value="IN_PROGRESS">Đang xử lý</option>
+                <option value="RESOLVED">Đã giải quyết</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let currentStatus = "";
+      let currentPage = 1;
+      let viewingId = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadRequests();
+        const params = new URLSearchParams(window.location.search);
+        const ticketId = params.get("ticketId");
+        if (ticketId) {
+          setTimeout(() => viewRequest(ticketId), 500);
+        }
+      });
+
+      function filterRequests(status) {
+        currentStatus = status;
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        event.target.classList.add("active");
+        loadRequests(1);
+      }
+
+      async function loadRequests(page = 1) {
+        currentPage = page;
+        const tbody = document.getElementById("requestsBody");
+        tbody.innerHTML = App.tableLoading(6);
+        try {
+          let url = `/admin/support?page=${page}&limit=15`;
+          if (currentStatus) url += `&status=${currentStatus}`;
+          const res = await App.api(url);
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Không có yêu cầu nào");
+            return;
+          }
+
+          tbody.innerHTML = items
+            .map(
+              (t) => `
+          <tr>
+            <td>
+              <div class="flex items-center gap-2">
+                <div class="avatar avatar-sm">${App.getInitials(t.user_name || "")}</div>
+                <div><div class="font-semibold text-sm">${t.user_name || "—"}</div><div class="text-xs text-muted">${t.user_email || ""}</div></div>
+              </div>
+            </td>
+            <td class="font-semibold">${t.subject || "—"}</td>
+            <td class="text-sm" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.message || "—"}</td>
+            <td>${App.statusBadge(t.status)}</td>
+            <td class="text-sm">${App.formatDate(t.created_at)}</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="viewRequest(${t.id})"><i class="fas fa-eye"></i> Xem</button></td>
+          </tr>
+        `,
+            )
+            .join("");
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadRequests");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function viewRequest(id) {
+        viewingId = id;
+        App.openModal("supportModal");
+        document.getElementById("changeStatus").value = "";
+        try {
+          const res = await App.api(`/admin/support/${id}`);
+          const t = res.data;
+          document.getElementById("modalTitle").textContent =
+            t.subject || "Yêu cầu hỗ trợ #" + t.id;
+          document.getElementById("modalMeta").innerHTML =
+            `${App.statusBadge(t.status)} • Từ: ${t.user_name || "—"} (${t.user_email || ""}) • ${App.formatDate(t.created_at)}`;
+
+          document.getElementById("requestContent").innerHTML = `
+          <div style="padding:1rem;background:var(--surface-2);border-radius:var(--radius-md);margin-bottom:0.75rem;">
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.375rem;"><strong>${t.user_name || "Người dùng"}</strong> • ${App.timeAgo(t.created_at)}</div>
+            <div style="font-size:0.875rem;line-height:1.7;">${t.message}</div>
+          </div>
+        `;
+
+          const messages = Array.isArray(t.messages) ? t.messages : [];
+          document.getElementById("responseSection").innerHTML =
+            messages.length > 0
+              ? messages
+                  .map((m) => {
+                    const isAdmin =
+                      (m.sender_role || "").toUpperCase() === "ADMIN";
+                    const senderLabel = isAdmin
+                      ? "Admin"
+                      : m.sender_name || "Người dùng";
+                    return `
+            <div style="padding:1rem;border-radius:var(--radius-md);margin-bottom:0.75rem;${isAdmin ? "background:var(--primary-light);margin-left:2rem;" : "background:var(--surface-2);margin-right:2rem;"}">
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.375rem;"><strong>${senderLabel}</strong> • ${App.timeAgo(m.created_at)}</div>
+              <div style="font-size:0.875rem;line-height:1.7;">${m.message || ""}</div>
+            </div>
+          `;
+                  })
+                  .join("")
+              : '<div class="text-muted text-sm" style="padding:0.5rem;">Chưa có trao đổi</div>';
+        } catch (e) {}
+      }
+
+      async function sendResponse() {
+        const response = document.getElementById("responseText").value.trim();
+        if (!response || !viewingId) {
+          App.showToast("Vui lòng nhập nội dung", "warning");
+          return;
+        }
+        try {
+          await App.api(`/admin/support/${viewingId}/respond`, "POST", {
+            response,
+          });
+          App.showToast("Đã gửi phản hồi", "success");
+          document.getElementById("responseText").value = "";
+          viewRequest(viewingId);
+          loadRequests(currentPage);
+        } catch (e) {}
+      }
+
+      async function updateRequestStatus() {
+        const status = document.getElementById("changeStatus").value;
+        if (!status || !viewingId) return;
+        try {
+          await App.api(`/admin/support/${viewingId}/status`, "PUT", {
+            status,
+          });
+          App.showToast("Đã cập nhật trạng thái", "success");
+          viewRequest(viewingId);
+          loadRequests(currentPage);
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>

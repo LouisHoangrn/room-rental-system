@@ -1,0 +1,296 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hỗ Trợ - Người thuê</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-home"></i> Tổng quan</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-paper-plane"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-contract"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-wallet"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Roommate</div>
+          <a href="roommate-profile.html" class="nav-item"
+            ><i class="fas fa-id-card"></i> Hồ sơ ghép & Lời mời</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item active"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Hỗ Trợ</h2>
+          </div>
+          <div class="topbar-right">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="App.openModal('createTicket')"
+            >
+              <i class="fas fa-plus"></i> Tạo yêu cầu
+            </button>
+            <div id="userDisplay"></div>
+          </div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Yêu cầu hỗ trợ của tôi</div>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Tiêu đề</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Ticket Modal -->
+    <div class="modal-overlay" id="createTicket">
+      <div class="modal">
+        <div class="modal-header">
+          <div><div class="modal-title">Tạo yêu cầu hỗ trợ</div></div>
+          <button class="modal-close" onclick="App.closeModal('createTicket')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label"
+              >Tiêu đề <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="ticketSubject"
+              class="form-control"
+              placeholder="Mô tả ngắn gọn vấn đề"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >Nội dung <span class="required">*</span></label
+            >
+            <textarea
+              id="ticketMessage"
+              class="form-control"
+              rows="4"
+              placeholder="Mô tả chi tiết vấn đề bạn gặp phải..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="App.closeModal('createTicket')"
+          >
+            Hủy
+          </button>
+          <button class="btn btn-primary" onclick="createTicket()">
+            <i class="fas fa-paper-plane"></i> Gửi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket Detail Modal -->
+    <div class="modal-overlay" id="ticketDetail">
+      <div class="modal modal-lg">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title" id="detailSubject"></div>
+            <div class="modal-subtitle" id="detailMeta"></div>
+          </div>
+          <button class="modal-close" onclick="App.closeModal('ticketDetail')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div
+            id="messagesList"
+            style="max-height: 400px; overflow-y: auto"
+          ></div>
+          <div
+            style="
+              margin-top: 1rem;
+              padding-top: 1rem;
+              border-top: 1px solid var(--border);
+            "
+          >
+            <div class="form-group" style="margin-bottom: 0.75rem">
+              <textarea
+                id="replyMsg"
+                class="form-control"
+                rows="2"
+                placeholder="Nhập phản hồi..."
+              ></textarea>
+            </div>
+            <button class="btn btn-primary btn-sm" id="sendReplyBtn">
+              <i class="fas fa-paper-plane"></i> Gửi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let viewingTicketId = null;
+      document.addEventListener("DOMContentLoaded", () => {
+        loadTickets().then(() => {
+          const params = new URLSearchParams(window.location.search);
+          const ticketId = params.get("ticketId");
+          if (ticketId) viewTicket(ticketId);
+        });
+      });
+
+      async function loadTickets(page = 1) {
+        const tbody = document.getElementById("ticketsBody");
+        tbody.innerHTML = App.tableLoading(4);
+        try {
+          const res = await App.api(
+            `/support/my-tickets?page=${page}&limit=10`,
+          );
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(4, "Chưa có yêu cầu hỗ trợ");
+            return;
+          }
+          tbody.innerHTML = items
+            .map(
+              (t) => `
+          <tr>
+            <td class="font-semibold">${t.subject || "—"}</td>
+            <td>${App.statusBadge(t.status)}</td>
+            <td>${App.formatDate(t.created_at)}</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="viewTicket(${t.id})"><i class="fas fa-eye"></i></button></td>
+          </tr>
+        `,
+            )
+            .join("");
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadTickets");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(4, "Lỗi tải");
+        }
+      }
+
+      async function createTicket() {
+        const subject = document.getElementById("ticketSubject").value.trim();
+        const message = document.getElementById("ticketMessage").value.trim();
+        if (!subject || !message) {
+          App.showToast("Vui lòng nhập tiêu đề và nội dung", "warning");
+          return;
+        }
+        try {
+          await App.api("/support", "POST", {
+            subject,
+            message,
+          });
+          App.showToast("Đã gửi yêu cầu hỗ trợ!", "success");
+          App.closeModal("createTicket");
+          document.getElementById("ticketSubject").value = "";
+          document.getElementById("ticketMessage").value = "";
+          loadTickets();
+        } catch (e) {}
+      }
+
+      async function viewTicket(id) {
+        viewingTicketId = id;
+        App.openModal("ticketDetail");
+        try {
+          const res = await App.api(`/support/${id}`);
+          const t = res.data;
+          document.getElementById("detailSubject").textContent = t.subject;
+          document.getElementById("detailMeta").innerHTML =
+            `${App.statusBadge(t.status)} • ${App.formatDate(t.created_at)}`;
+          const msgs = t.messages || [];
+          document.getElementById("messagesList").innerHTML =
+            msgs.length > 0
+              ? msgs
+                  .map(
+                    (m) => `
+            <div style="margin-bottom:1rem;padding:0.875rem;border-radius:var(--radius-md);${m.sender_id === App.state.user?.id ? "background:var(--primary-light);margin-left:2rem;" : "background:var(--surface-2);margin-right:2rem;"}">
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.375rem;">${m.sender_name || (m.sender_id === App.state.user?.id ? "Bạn" : "Admin")} • ${App.timeAgo(m.created_at)}</div>
+              <div style="font-size:0.875rem;">${m.message}</div>
+            </div>
+          `,
+                  )
+                  .join("")
+              : '<div class="text-center text-muted" style="padding:2rem;">Chưa có tin nhắn</div>';
+        } catch (e) {}
+      }
+
+      document
+        .getElementById("sendReplyBtn")
+        .addEventListener("click", async () => {
+          const msg = document.getElementById("replyMsg").value.trim();
+          if (!msg || !viewingTicketId) {
+            App.showToast("Vui lòng nhập nội dung", "warning");
+            return;
+          }
+          try {
+            await App.api(`/support/${viewingTicketId}/messages`, "POST", {
+              message: msg,
+            });
+            App.showToast("Đã gửi phản hồi", "success");
+            document.getElementById("replyMsg").value = "";
+            viewTicket(viewingTicketId);
+          } catch (e) {}
+        });
+    </script>
+  </body>
+</html>
