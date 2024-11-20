@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý người dùng - Admin</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-shield-alt"></i></div>
+          Admin Panel
+        </div>
+        <nav class="sidebar-nav">
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-line"></i> Tổng quan</a
+          >
+          <a href="users.html" class="nav-item active"
+            ><i class="fas fa-users-cog"></i> Quản lý người dùng</a
+          >
+          <a href="rooms.html" class="nav-item"
+            ><i class="fas fa-building"></i> Duyệt phòng</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-life-ring"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Quản lý người dùng</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <!-- Filters -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="search-bar">
+                <div class="search-input-wrap">
+                  <i class="fas fa-search"></i>
+                  <input
+                    type="text"
+                    id="searchInput"
+                    class="form-control"
+                    placeholder="Tìm theo tên, email..."
+                    onkeyup="debounceSearch()"
+                  />
+                </div>
+                <select
+                  id="roleFilter"
+                  class="form-control"
+                  style="width: 160px"
+                  onchange="loadUsers()"
+                >
+                  <option value="">Tất cả vai trò</option>
+                  <option value="USER">Người thuê</option>
+                  <option value="OWNER">Chủ trọ</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+                <select
+                  id="statusFilter"
+                  class="form-control"
+                  style="width: 160px"
+                  onchange="loadUsers()"
+                >
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="ACTIVE">Đang hoạt động</option>
+                  <option value="BLOCKED">Bị khóa</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Người dùng</th>
+                    <th>Email</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div class="modal-overlay" id="userModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title" id="modalUserName"></div>
+            <div class="modal-subtitle" id="modalUserEmail"></div>
+          </div>
+          <button class="modal-close" onclick="App.closeModal('userModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modalUserBody"></div>
+        <div class="modal-footer" id="modalUserActions"></div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let searchTimer = null;
+      let currentPage = 1;
+
+      document.addEventListener("DOMContentLoaded", () => loadUsers());
+
+      function debounceSearch() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => loadUsers(1), 400);
+      }
+
+      async function loadUsers(page = 1) {
+        currentPage = page;
+        const tbody = document.getElementById("usersBody");
+        tbody.innerHTML = App.tableLoading(6);
+
+        const params = new URLSearchParams();
+        const search = document.getElementById("searchInput").value.trim();
+        const role = document.getElementById("roleFilter").value;
+        const status = document.getElementById("statusFilter").value;
+
+        if (search) params.append("search", search);
+        if (role) params.append("role", role);
+        if (status) params.append("status", status);
+        params.append("page", page);
+        params.append("limit", 15);
+
+        try {
+          const res = await App.api(`/admin/users?${params.toString()}`);
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Không tìm thấy người dùng");
+            return;
+          }
+
+          tbody.innerHTML = items
+            .map((u) => {
+              const name = u.name || "Chưa cập nhật";
+              const isBlocked = u.status === "BLOCKED";
+              return `
+          <tr>
+            <td>
+              <div class="flex items-center gap-3">
+                <div class="avatar avatar-sm">${App.getInitials(name)}</div>
+                <div><div class="font-semibold">${name}</div><div class="text-xs text-muted">${u.phone || ""}</div></div>
+              </div>
+            </td>
+            <td class="text-sm">${u.email}</td>
+            <td>${App.roleBadge(u.role)}</td>
+            <td>${App.statusBadge(u.status)}</td>
+            <td class="text-sm">${App.formatDate(u.created_at)}</td>
+            <td>
+              <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:nowrap;">
+                <button class="btn btn-ghost btn-sm" onclick="viewUser(${u.id})" title="Chi tiết"><i class="fas fa-eye"></i></button>
+                ${
+                  isBlocked
+                    ? `<button class="btn btn-success btn-sm" onclick="toggleUser(${u.id})" title="Mở khóa"><i class="fas fa-unlock"></i></button>`
+                    : `<button class="btn btn-danger btn-sm" onclick="toggleUser(${u.id})" title="Khóa"><i class="fas fa-lock"></i></button>`
+                }
+              </div>
+            </td>
+          </tr>`;
+            })
+            .join("");
+
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadUsers");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function viewUser(id) {
+        App.openModal("userModal");
+        try {
+          const res = await App.api(`/admin/users/${id}`);
+          const u = res.data;
+          const name = u.name || "N/A";
+          const isBlocked = u.status === "BLOCKED";
+          document.getElementById("modalUserName").textContent = name;
+          document.getElementById("modalUserEmail").textContent = u.email;
+          document.getElementById("modalUserBody").innerHTML = `
+          <div class="info-list">
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-user-tag"></i></div><div class="info-item-content"><div class="info-item-label">Vai trò</div><div class="info-item-value">${App.roleBadge(u.role)}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-phone"></i></div><div class="info-item-content"><div class="info-item-label">Điện thoại</div><div class="info-item-value">${u.phone || "—"}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-toggle-on"></i></div><div class="info-item-content"><div class="info-item-label">Trạng thái</div><div class="info-item-value">${App.statusBadge(u.status)}</div></div></div>
+            <div class="info-item"><div class="info-item-icon"><i class="fas fa-calendar"></i></div><div class="info-item-content"><div class="info-item-label">Ngày đăng ký</div><div class="info-item-value">${App.formatDateTime(u.created_at)}</div></div></div>
+          </div>
+        `;
+          document.getElementById("modalUserActions").innerHTML = `
+          <button class="btn btn-secondary" onclick="App.closeModal('userModal')">Đóng</button>
+          ${
+            isBlocked
+              ? `<button class="btn btn-success" onclick="toggleUser(${u.id});App.closeModal('userModal')"><i class="fas fa-unlock"></i> Mở khóa</button>`
+              : `<button class="btn btn-danger" onclick="toggleUser(${u.id});App.closeModal('userModal')"><i class="fas fa-lock"></i> Khóa tài khoản</button>`
+          }
+        `;
+        } catch (e) {
+          document.getElementById("modalUserBody").innerHTML = "Lỗi tải";
+        }
+      }
+
+      async function toggleUser(id) {
+        if (!(await App.confirm("Thay đổi trạng thái tài khoản này?"))) return;
+        try {
+          await App.api(`/admin/users/${id}/toggle-status`, "PUT");
+          App.showToast("Cập nhật trạng thái thành công", "success");
+          loadUsers(currentPage);
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>
