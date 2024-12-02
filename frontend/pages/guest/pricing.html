@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bảng Giá Dịch Vụ - RoomRental</title>
+    <meta
+      name="description"
+      content="Các gói dịch vụ đăng tin cho chủ trọ với mức giá hợp lý, cam kết hiệu quả cao"
+    />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .navbar {
+        font-family: "Outfit", sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem 4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        text-decoration: none;
+      }
+      .nav-brand .icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .btn-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+      }
+      .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        color: #fff;
+      }
+      .btn-gradient {
+        background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+        background-size: 200% auto;
+        color: #fff;
+        border: none;
+        transition: all 0.3s;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+      }
+      .btn-gradient:hover {
+        background-position: right center;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        transform: translateY(-2px);
+        color: #fff;
+      }
+
+      /* Hero Pricing */
+      .hero-pricing {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        padding: 5rem 2rem 10rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        padding-top: 150px;
+      }
+      .hero-pricing::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(168, 85, 247, 0.2) 0%,
+          transparent 70%
+        );
+      }
+      .hero-pricing h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-pricing p {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 1.15rem;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Pricing Cards */
+      .pricing-container {
+        max-width: 1100px;
+        margin: -7rem auto 4rem;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 10;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        align-items: center;
+      }
+
+      @media (max-width: 992px) {
+        .pricing-container {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          margin-top: -4rem;
+        }
+      }
+
+      .pricing-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 2.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .pricing-card.popular {
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        border: none;
+        transform: scale(1.05);
+        box-shadow:
+          0 25px 50px -12px rgba(0, 0, 0, 0.5),
+          0 0 30px rgba(6, 182, 212, 0.3);
+      }
+      .pricing-card.popular:hover {
+        transform: scale(1.05) translateY(-10px);
+        box-shadow:
+          0 25px 50px -12px rgba(0, 0, 0, 0.5),
+          0 0 40px rgba(6, 182, 212, 0.5);
+      }
+
+      .popular-badge {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #6366f1, #06b6d4);
+        color: #fff;
+        padding: 0.4rem 1.25rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+      }
+
+      .plan-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      .popular .plan-name {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .plan-price {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+      }
+      .plan-price span {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+      .popular .plan-price {
+        background: none;
+        -webkit-text-fill-color: #fff;
+        color: #fff;
+      }
+      .popular .plan-price span {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .plan-desc {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .popular .plan-desc {
+        color: rgba(255, 255, 255, 0.9);
+        border-bottom-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .plan-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem;
+        text-align: left;
+      }
+      .plan-features li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        color: var(--text-main);
+        font-size: 0.95rem;
+      }
+      .popular .plan-features li {
+        color: #fff;
+      }
+
+      .plan-features li.disabled {
+        color: var(--text-muted);
+        opacity: 0.6;
+      }
+      .plan-features i {
+        color: #10b981;
+        font-size: 1.1rem;
+      }
+      .popular .plan-features i {
+        color: #34d399;
+      }
+
+      .plan-features li.disabled i {
+        color: var(--text-muted);
+        content: "\f00d"; /* Cross icon */
+      }
+
+      .plan-btn {
+        width: 100%;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-main);
+      }
+      .btn-outline:hover {
+        background: var(--surface-2);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body style="background: var(--background)">
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <a href="../../index.html" class="nav-brand">
+        <div class="icon"><i class="fas fa-house-chimney"></i></div>
+        RoomRental
+      </a>
+
+      <div
+        class="nav-main-menu"
+        style="
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 2rem;
+          font-weight: 500;
+        "
+      >
+        <a
+          href="../../index.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Trang chủ</a
+        >
+        <a
+          href="rooms.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tìm phòng</a
+        >
+        <a
+          href="roommates.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tìm ở ghép</a
+        >
+        <a href="pricing.html" style="color: #fff; text-decoration: none"
+          >Bảng giá</a
+        >
+        <a
+          href="news.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tin tức</a
+        >
+      </div>
+
+      <div class="nav-links" id="headerActions">
+        <a href="login.html" class="btn-glass">Đăng nhập</a>
+        <a href="register.html" class="btn-gradient">Đăng ký ngay</a>
+      </div>
+    </nav>
+
+    <!-- Hero Pricing -->
+    <section class="hero-pricing">
+      <h1>Giải Pháp Đăng Tin Hiệu Quả</h1>
+      <p>
+        Thu hút hàng ngàn khách hàng tiềm năng với chi phí tối ưu nhất. Lựa chọn
+        gói dịch vụ phù hợp với nhu cầu của bạn.
+      </p>
+    </section>
+
+    <!-- Pricing Tables -->
+    <section class="pricing-container">
+      <!-- Basic Plan -->
+      <div class="pricing-card">
+        <div class="plan-name">GÓI CƠ BẢN</div>
+        <div class="plan-price">Miễn phí</div>
+        <div class="plan-desc">
+          Phù hợp cho cá nhân lâu lâu mới có 1 phòng trống cần cho thuê.
+        </div>
+
+        <ul class="plan-features">
+          <li><i class="fas fa-check-circle"></i> Đăng tối đa 3 tin / tháng</li>
+          <li><i class="fas fa-check-circle"></i> Tin tồn tại 15 ngày</li>
+          <li><i class="fas fa-check-circle"></i> Hỗ trợ cơ bản</li>
+          <li class="disabled">
+            <i class="fas fa-times-circle"></i> Hiển thị nổi bật trang chủ
+          </li>
+          <li class="disabled">
+            <i class="fas fa-times-circle"></i> Tự động đẩy tin lên đầu
+          </li>
+        </ul>
+
+        <button
+          onclick="handlePricingClick('Gói Cơ Bản')"
+          class="plan-btn btn-outline"
+          style="cursor: pointer"
+        >
+          Bắt Đầu Ngay
+        </button>
+      </div>
+
+      <!-- VIP 1 Plan (Popular) -->
+      <div class="pricing-card popular">
+        <div class="popular-badge">Phổ biến nhất</div>
+        <div class="plan-name">GÓI VIP 1</div>
+        <div class="plan-price">199k <span>/ tháng</span></div>
+        <div class="plan-desc">
+          Hoàn hảo cho chủ trọ vừa và nhỏ, giúp cho thuê phòng cực nhanh.
+        </div>
+
+        <ul class="plan-features">
+          <li><i class="fas fa-check-circle"></i> Đăng không giới hạn tin</li>
+          <li><i class="fas fa-check-circle"></i> Tin tồn tại 30 ngày</li>
+          <li><i class="fas fa-check-circle"></i> Hỗ trợ ưu tiên 24/7</li>
+          <li><i class="fas fa-check-circle"></i> Huy hiệu "Phòng VIP"</li>
+          <li>
+            <i class="fas fa-check-circle"></i> Đẩy tin miễn phí 2 lần/tuần
+          </li>
+        </ul>
+
+        <button
+          onclick="handlePricingClick('Gói VIP 1')"
+          class="plan-btn btn-gradient"
+          style="color: #fff; border: none; cursor: pointer"
+        >
+          Nâng Cấp VIP 1
+        </button>
+      </div>
+
+      <!-- VIP 2 Plan -->
+      <div class="pricing-card">
+        <div class="plan-name">GÓI DOANH NGHIỆP</div>
+        <div class="plan-price">499k <span>/ tháng</span></div>
+        <div class="plan-desc">
+          Dành cho hệ thống chuỗi phòng trọ, chung cư mini quy mô lớn.
+        </div>
+
+        <ul class="plan-features">
+          <li>
+            <i class="fas fa-check-circle"></i> Tất cả đặc quyền của VIP 1
+          </li>
+          <li><i class="fas fa-check-circle"></i> Tin tồn tại vô thời hạn</li>
+          <li><i class="fas fa-check-circle"></i> Hiển thị Top 1 Trang chủ</li>
+          <li><i class="fas fa-check-circle"></i> Đẩy tin tự động mỗi ngày</li>
+          <li>
+            <i class="fas fa-check-circle"></i> Phân tích dữ liệu người xem
+          </li>
+        </ul>
+
+        <button
+          onclick="handlePricingClick('Gói Doanh Nghiệp')"
+          class="plan-btn btn-outline"
+          style="cursor: pointer"
+        >
+          Liên Hệ Tư Vấn
+        </button>
+      </div>
+    </section>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        App.renderPublicHeader("headerActions", false);
+      });
+
+      function handlePricingClick(planName) {
+        if (planName === "Gói Tin VIP 1") {
+          App.showToast(
+            "Tính năng gửi yêu cầu đang phát triển ở Giai đoạn 2. Tạm thời vui lòng gọi Hotline!",
+            "info",
+          );
+          return;
+        }
+
+        if (!App.isLoggedIn()) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const role = (App.state.user.role || "").toUpperCase();
+        if (role === "OWNER") {
+          App.showToast(
+            `Đang chuyển đến cổng thanh toán cho ${planName}...`,
+            "info",
+          );
+          setTimeout(
+            () => (window.location.href = "../owner/payments.html"),
+            1500,
+          );
+        } else if (role === "USER") {
+          App.showToast(
+            "Tài khoản của bạn là Người Thuê (User). Vui lòng dùng tài khoản Chủ trọ (Owner) để mua gói.",
+            "error",
+          );
+        } else {
+          App.showToast(
+            "Bạn không có quyền thực hiện chức năng này.",
+            "warning",
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
