@@ -1,0 +1,260 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Người thuê</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <a href="dashboard.html" class="nav-item active"
+            ><i class="fas fa-home"></i> Tổng quan</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-paper-plane"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-contract"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-wallet"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Roommate</div>
+          <a href="roommate-profile.html" class="nav-item"
+            ><i class="fas fa-id-card"></i> Hồ sơ ghép & Lời mời</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Tổng quan</h2>
+          </div>
+          <div class="topbar-right">
+            <a href="notifications.html" class="topbar-icon-btn"
+              ><i class="fas fa-bell"></i
+              ><span
+                class="badge-dot"
+                id="notifDot"
+                style="display: none"
+              ></span
+            ></a>
+            <div id="userDisplay"></div>
+          </div>
+        </header>
+
+        <div class="page-content">
+          <!-- Quick Action Cards -->
+          <div class="grid grid-cols-3 mb-6">
+            <div
+              class="card"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  var(--primary) 0%,
+                  #7c3aed 100%
+                );
+                color: #fff;
+                border: none;
+              "
+            >
+              <div class="card-body">
+                <h3 style="font-size: 1.125rem; margin-bottom: 0.375rem">
+                  Tìm phòng
+                </h3>
+                <p
+                  style="opacity: 0.85; font-size: 0.8rem; margin-bottom: 1rem"
+                >
+                  Tìm kiếm phòng trọ phù hợp.
+                </p>
+                <a
+                  href="../guest/rooms.html"
+                  class="btn"
+                  style="background: #fff; color: var(--primary)"
+                  ><i class="fas fa-search"></i> Tìm ngay</a
+                >
+              </div>
+            </div>
+            <div
+              class="card"
+              style="
+                background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+                color: #fff;
+                border: none;
+              "
+            >
+              <div class="card-body">
+                <h3 style="font-size: 1.125rem; margin-bottom: 0.375rem">
+                  Tìm người ở ghép
+                </h3>
+                <p
+                  style="opacity: 0.85; font-size: 0.8rem; margin-bottom: 1rem"
+                >
+                  Tìm người ở ghép phù hợp.
+                </p>
+                <a
+                  href="../guest/roommates.html"
+                  class="btn"
+                  style="background: #fff; color: #0f172a"
+                  ><i class="fas fa-user-friends"></i> Tìm ngay</a
+                >
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon yellow"><i class="fas fa-wallet"></i></div>
+              <div class="stat-content">
+                <div class="stat-label">Thanh toán sắp tới</div>
+                <div class="stat-value" id="nextPayAmount"></div>
+                <div class="stat-change" id="nextPayDue"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tables -->
+          <div class="grid grid-cols-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Yêu cầu thuê gần đây</div>
+                <a href="requests.html" class="btn btn-ghost btn-sm"
+                  >Xem tất cả <i class="fas fa-arrow-right"></i
+                ></a>
+              </div>
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Phòng</th>
+                      <th>Ngày gửi</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentRequests"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Hợp đồng hiện tại</div>
+                <a href="contracts.html" class="btn btn-ghost btn-sm"
+                  >Xem tất cả <i class="fas fa-arrow-right"></i
+                ></a>
+              </div>
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Phòng</th>
+                      <th>Thời hạn</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody id="activeContracts"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          // Payments
+          const payRes = await App.api(
+            "/payments/user/my-payments?status=PENDING&limit=1",
+          );
+          const pays = payRes.data || [];
+          if (pays.length > 0) {
+            document.getElementById("nextPayAmount").textContent =
+              App.formatCurrency(pays[0].amount);
+            document.getElementById("nextPayDue").textContent =
+              `Hạn: ${App.formatDate(pays[0].due_date)}`;
+          } else {
+            document.getElementById("nextPayAmount").textContent = "";
+            document.getElementById("nextPayDue").textContent =
+              "Không có hóa đơn nợ";
+          }
+        } catch (e) {
+          document.getElementById("nextPayAmount").textContent = "";
+        }
+
+        try {
+          // Requests
+          const reqRes = await App.api("/rentals/my-requests?limit=5");
+          const reqs = reqRes.data || [];
+          document.getElementById("recentRequests").innerHTML =
+            reqs.length > 0
+              ? reqs
+                  .map(
+                    (r) =>
+                      `<tr><td class="font-semibold">${r.room_title || "Phòng #" + r.room_id}</td><td>${App.formatDate(r.created_at)}</td><td>${App.statusBadge(r.status)}</td></tr>`,
+                  )
+                  .join("")
+              : App.tableEmpty(3, "Chưa có yêu cầu nào");
+        } catch (e) {
+          document.getElementById("recentRequests").innerHTML = App.tableEmpty(
+            3,
+            "Không thể tải",
+          );
+        }
+
+        try {
+          // Contracts
+          const conRes = await App.api("/contracts/user/my-contracts?limit=5");
+          const cons = conRes.data || [];
+          document.getElementById("activeContracts").innerHTML =
+            cons.length > 0
+              ? cons
+                  .map(
+                    (c) =>
+                      `<tr><td class="font-semibold">${c.room_title || "Phòng #" + c.room_id}</td><td>${App.formatDate(c.start_date)} - ${App.formatDate(c.end_date)}</td><td>${App.statusBadge(c.status)}</td></tr>`,
+                  )
+                  .join("")
+              : App.tableEmpty(3, "Chưa có hợp đồng");
+        } catch (e) {
+          document.getElementById("activeContracts").innerHTML = App.tableEmpty(
+            3,
+            "Không thể tải",
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
