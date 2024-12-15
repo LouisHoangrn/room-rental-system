@@ -1,0 +1,230 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán - Người thuê</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-home"></i> Tổng quan</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-paper-plane"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-contract"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item active"
+            ><i class="fas fa-wallet"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Roommate</div>
+          <a href="roommate-profile.html" class="nav-item"
+            ><i class="fas fa-id-card"></i> Hồ sơ ghép & Lời mời</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Thanh toán</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Danh sách hóa đơn</div>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Hợp đồng</th>
+                    <th>Số tiền</th>
+                    <th>Hạn thanh toán</th>
+                    <th>Phương thức</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Pay Modal -->
+    <div class="modal-overlay" id="payModal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Thanh toán hóa đơn</div>
+            <div class="modal-subtitle">Thanh toán mô phỏng nội bộ</div>
+          </div>
+          <button class="modal-close" onclick="App.closeModal('payModal')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="text-align: center; padding: 1rem 0">
+            <div style="font-size: 0.875rem; color: var(--text-muted)">
+              Số tiền cần thanh toán
+            </div>
+            <div
+              style="
+                font-size: 2rem;
+                font-weight: 800;
+                color: var(--primary);
+                margin: 0.5rem 0;
+              "
+              id="payAmount"
+            >
+              —
+            </div>
+            <div
+              style="font-size: 0.8rem; color: var(--text-light)"
+              id="payDue"
+            ></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phương thức thanh toán</label>
+            <select id="payMethod" class="form-control">
+              <option value="bank_transfer">Chuyển khoản ngân hàng</option>
+              <option value="e_wallet">Ví điện tử</option>
+              <option value="cash">Tiền mặt</option>
+            </select>
+          </div>
+          <div
+            style="
+              background: var(--info-bg);
+              padding: 0.75rem 1rem;
+              border-radius: var(--radius-md);
+              font-size: 0.8rem;
+              color: var(--info-dark);
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            "
+          >
+            <i class="fas fa-info-circle"></i> Đây là thanh toán mô phỏng, không
+            trừ tiền thật.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="App.closeModal('payModal')"
+          >
+            Hủy
+          </button>
+          <button class="btn btn-primary" id="confirmPayBtn">
+            <i class="fas fa-credit-card"></i> Xác nhận thanh toán
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let payingId = null;
+      document.addEventListener("DOMContentLoaded", () => loadPayments());
+
+      async function loadPayments(page = 1) {
+        const tbody = document.getElementById("paymentsBody");
+        tbody.innerHTML = App.tableLoading(6);
+        try {
+          const res = await App.api(
+            `/payments/user/my-payments?page=${page}&limit=10`,
+          );
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Chưa có hóa đơn");
+            return;
+          }
+          tbody.innerHTML = items
+            .map(
+              (p) => `
+          <tr>
+            <td class="font-semibold">HĐ #${p.contract_id}</td>
+            <td class="font-semibold">${App.formatCurrency(p.amount)}</td>
+            <td>${App.formatDate(p.due_date)}</td>
+            <td class="text-sm">${p.method || "—"}</td>
+            <td>${App.statusBadge(p.status)}</td>
+            <td>${p.status === "PENDING" || p.status === "OVERDUE" ? `<button class="btn btn-primary btn-sm" onclick="openPay(${p.id}, ${p.amount}, '${p.due_date}')"><i class="fas fa-credit-card"></i> Thanh toán</button>` : p.transaction_code ? `<span class="text-xs text-muted">${p.transaction_code}</span>` : "—"}</td>
+          </tr>
+        `,
+            )
+            .join("");
+          const pg = res.pagination;
+          if (pg)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(pg.page, pg.limit, pg.total, "loadPayments");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      function openPay(id, amount, dueDate) {
+        payingId = id;
+        document.getElementById("payAmount").textContent =
+          App.formatCurrency(amount);
+        document.getElementById("payDue").textContent =
+          `Hạn: ${App.formatDate(dueDate)}`;
+        App.openModal("payModal");
+      }
+
+      document
+        .getElementById("confirmPayBtn")
+        .addEventListener("click", async () => {
+          if (!payingId) return;
+          try {
+            await App.api(`/payments/${payingId}/pay`, "PUT", {
+              payment_method: document.getElementById("payMethod").value,
+            });
+            App.showToast("Thanh toán thành công!", "success");
+            App.closeModal("payModal");
+            payingId = null;
+            loadPayments();
+          } catch (e) {}
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Hệ thống Thuê Phòng Trọ</title>
+    <meta
+      name="description"
+      content="Đăng nhập vào hệ thống thuê phòng trọ và ghép đôi"
+    />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="auth-wrapper">
+      <!-- Left Banner -->
+      <div class="auth-banner">
+        <div class="auth-banner-content">
+          <a
+            href="../../index.html"
+            class="auth-brand"
+            style="text-decoration: none; color: inherit"
+          >
+            <div class="brand-icon"><i class="fas fa-house-chimney"></i></div>
+            <span class="auth-brand-name">RoomRental</span>
+          </a>
+          <h1 class="auth-tagline">
+            Tìm phòng trọ<br /><span>dễ dàng hơn</span>
+          </h1>
+          <p class="auth-desc">
+            Nền tảng kết nối chủ trọ và người thuê phòng hiện đại, hỗ trợ ghép
+            đôi bạn ở cùng phù hợp nhất.
+          </p>
+        </div>
+        <div class="auth-features">
+          <div class="auth-feature">
+            <i class="fas fa-search"></i
+            ><span>Tìm kiếm phòng theo khu vực, giá, tiện ích</span>
+          </div>
+          <div class="auth-feature">
+            <i class="fas fa-file-contract"></i
+            ><span>Quy trình thuê phòng & hợp đồng trực tuyến</span>
+          </div>
+          <div class="auth-feature">
+            <i class="fas fa-user-friends"></i
+            ><span>Ghép đôi bạn ở cùng phù hợp với lối sống</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Form -->
+      <div class="auth-form-side">
+        <div class="auth-form-card">
+          <div class="auth-form-header">
+            <h2 class="auth-form-title">Chào mừng trở lại</h2>
+            <p class="auth-form-subtitle">
+              Đăng nhập để tiếp tục sử dụng hệ thống
+            </p>
+          </div>
+
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label" for="email"
+                >Email <span class="required">*</span></label
+              >
+              <div class="form-control-icon">
+                <i class="fas fa-envelope input-icon"></i>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  placeholder="you@example.com"
+                  required
+                  autofocus
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password"
+                >Mật khẩu <span class="required">*</span></label
+              >
+              <div class="form-control-icon">
+                <i class="fas fa-lock input-icon"></i>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  placeholder="Nhập mật khẩu"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary btn-block btn-lg"
+              style="margin-top: 0.5rem"
+            >
+              <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </button>
+          </form>
+
+          <div
+            style="
+              text-align: center;
+              margin-top: 2rem;
+              font-size: 0.9rem;
+              color: var(--text-muted);
+            "
+          >
+            Chưa có tài khoản?
+            <a href="register.html" style="font-weight: 600">Đăng ký ngay</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+  </body>
+</html>

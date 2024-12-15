@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán - Chủ trọ</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <div
+            class="nav-section-label"
+            style="margin-top: 0.5rem; margin-bottom: 0.5rem"
+          >
+            Quản lý
+          </div>
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-chart-pie"></i> Tổng quan</a
+          >
+          <a href="rooms.html" class="nav-item"
+            ><i class="fas fa-bed"></i> Phòng của tôi</a
+          >
+          <a href="requests.html" class="nav-item"
+            ><i class="fas fa-envelope-open-text"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-signature"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item active"
+            ><i class="fas fa-credit-card"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Quản lý thanh toán</h2>
+          </div>
+          <div class="topbar-right">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="App.openModal('createPayment')"
+            >
+              <i class="fas fa-plus"></i> Tạo hóa đơn
+            </button>
+            <div id="userDisplay"></div>
+          </div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>HĐ #</th>
+                    <th>Người thuê</th>
+                    <th>Số tiền</th>
+                    <th>Hạn thanh toán</th>
+                    <th>Phương thức</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Payment Modal -->
+    <div class="modal-overlay" id="createPayment">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">Tạo hóa đơn thanh toán</div>
+          </div>
+          <button class="modal-close" onclick="App.closeModal('createPayment')">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label"
+              >Hợp đồng <span class="required">*</span></label
+            >
+            <select id="contractId" class="form-control">
+              <option value="">Đang tải...</option>
+            </select>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label"
+                >Loại thanh toán <span class="required">*</span></label
+              >
+              <select id="payType" class="form-control" required>
+                <option value="MONTHLY_RENT">Tiền thuê hàng tháng</option>
+                <option value="DEPOSIT">Tiền cọc</option>
+                <option value="OTHER">Khác</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Tháng thanh toán <span class="required">*</span></label
+              >
+              <input
+                type="month"
+                id="billingMonth"
+                class="form-control"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label"
+                >Số tiền (₫) <span class="required">*</span></label
+              >
+              <input
+                type="number"
+                id="payAmount"
+                class="form-control"
+                placeholder="3000000"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Hạn thanh toán <span class="required">*</span></label
+              >
+              <input type="date" id="dueDate" class="form-control" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ghi chú</label>
+            <textarea
+              id="payNotes"
+              class="form-control"
+              rows="2"
+              placeholder="Tiền phòng tháng X..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="App.closeModal('createPayment')"
+          >
+            Hủy
+          </button>
+          <button class="btn btn-primary" onclick="createPayment()">
+            <i class="fas fa-file-invoice-dollar"></i> Tạo hóa đơn
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        loadPayments();
+        loadContracts();
+      });
+
+      async function loadContracts() {
+        try {
+          const res = await App.api("/contracts/owner/my-contracts?limit=50");
+          const items = (res.data || []).filter((c) => c.status === "ACTIVE");
+          const select = document.getElementById("contractId");
+          select.innerHTML = '<option value="">-- Chọn hợp đồng --</option>';
+          items.forEach((c) => {
+            select.innerHTML += `<option value="${c.id}">HĐ #${c.id} — ${c.user_name || ""} (${App.formatCurrency(c.monthly_rent)})</option>`;
+          });
+        } catch (e) {}
+      }
+
+      async function loadPayments(page = 1) {
+        const tbody = document.getElementById("paymentsBody");
+        tbody.innerHTML = App.tableLoading(6);
+        try {
+          const res = await App.api(
+            `/payments/owner/my-payments?page=${page}&limit=10`,
+          );
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(6, "Chưa có hóa đơn");
+            return;
+          }
+          tbody.innerHTML = items
+            .map(
+              (p) => `
+          <tr>
+            <td class="font-semibold">#${p.contract_id}</td>
+            <td>${p.user_name || "—"}</td>
+            <td class="font-semibold">${App.formatCurrency(p.amount)}</td>
+            <td>${App.formatDate(p.due_date)}</td>
+            <td class="text-sm">${p.payment_method || "—"}</td>
+            <td>${App.statusBadge(p.status)}</td>
+          </tr>
+        `,
+            )
+            .join("");
+          const pg = res.pagination;
+          if (pg)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(pg.page, pg.limit, pg.total, "loadPayments");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(6, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function createPayment() {
+        const contract_id = parseInt(
+          document.getElementById("contractId").value,
+        );
+        if (!contract_id) {
+          App.showToast("Vui lòng chọn hợp đồng", "warning");
+          return;
+        }
+        const billingMonthRaw = document.getElementById("billingMonth").value;
+        const data = {
+          contract_id,
+          amount: parseFloat(document.getElementById("payAmount").value),
+          billing_month: billingMonthRaw ? billingMonthRaw + "-01" : "",
+          due_date: document.getElementById("dueDate").value,
+          payment_type: document.getElementById("payType").value,
+          notes: document.getElementById("payNotes").value,
+        };
+        if (
+          !data.amount ||
+          !data.due_date ||
+          !data.billing_month ||
+          !data.payment_type
+        ) {
+          App.showToast("Vui lòng điền đầy đủ", "warning");
+          return;
+        }
+        try {
+          await App.api("/payments", "POST", data);
+          App.showToast("Tạo hóa đơn thành công!", "success");
+          App.closeModal("createPayment");
+          loadPayments();
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>

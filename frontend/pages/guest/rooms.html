@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tìm Phòng Trọ - RoomRental</title>
+    <meta
+      name="description"
+      content="Tìm kiếm phòng trọ theo khu vực, giá, diện tích và tiện ích"
+    />
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .navbar {
+        font-family: "Outfit", sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem 4rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        transition: all 0.3s ease;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        text-decoration: none;
+      }
+      .nav-brand .icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .btn-glass {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+      }
+      .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        color: #fff;
+      }
+      .btn-gradient {
+        background: linear-gradient(135deg, #6366f1, #06b6d4, #a855f7);
+        background-size: 200% auto;
+        color: #fff;
+        border: none;
+        transition: all 0.3s;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+      }
+      .btn-gradient:hover {
+        background-position: right center;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        transform: translateY(-2px);
+        color: #fff;
+      }
+
+      /* Restored original rooms.html styles */
+      .hero-search {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-search::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(79, 70, 229, 0.2) 0%,
+          transparent 70%
+        );
+      }
+      .hero-search h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-search p {
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .filter-bar {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-xl);
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr auto;
+        gap: 1.25rem;
+        align-items: end;
+      }
+      .filter-bar .form-group {
+        margin-bottom: 0;
+      }
+      .filter-bar .form-label {
+        font-size: 0.75rem;
+        margin-bottom: 0.375rem;
+      }
+      @media (max-width: 768px) {
+        .filter-bar {
+          grid-template-columns: 1fr;
+        }
+        .hero-search h1 {
+          font-size: 1.5rem;
+        }
+      }
+      .rooms-grid {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .rooms-results {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+      }
+      .rooms-count {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+      .rooms-count strong {
+        color: var(--text-main);
+      }
+    </style>
+  </head>
+  <body style="background: var(--background)">
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <a href="../../index.html" class="nav-brand">
+        <div class="icon"><i class="fas fa-house-chimney"></i></div>
+        RoomRental
+      </a>
+
+      <div
+        class="nav-main-menu"
+        style="
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 2rem;
+          font-weight: 500;
+        "
+      >
+        <a
+          href="../../index.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Trang chủ</a
+        >
+        <a href="rooms.html" style="color: #fff; text-decoration: none"
+          >Tìm phòng</a
+        >
+        <a
+          href="roommates.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tìm ở ghép</a
+        >
+        <a
+          href="pricing.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Bảng giá</a
+        >
+        <a
+          href="news.html"
+          style="
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+          "
+          onmouseover="this.style.color = '#fff'"
+          onmouseout="this.style.color = 'rgba(255,255,255,0.7)'"
+          >Tin tức</a
+        >
+      </div>
+
+      <div class="nav-links" id="headerActions">
+        <a href="login.html" class="btn-glass">Đăng nhập</a>
+        <a href="register.html" class="btn-gradient">Đăng ký ngay</a>
+      </div>
+    </nav>
+
+    <!-- Hero Search -->
+    <section class="hero-search" style="padding-top: 120px">
+      <h1>Tìm phòng trọ phù hợp với bạn</h1>
+      <p>Hàng trăm phòng trọ được cập nhật mỗi ngày</p>
+
+      <div class="filter-bar">
+        <div class="form-group">
+          <label class="form-label">Tìm kiếm</label>
+          <input
+            type="text"
+            id="searchInput"
+            class="form-control"
+            placeholder="Tên phòng, địa chỉ..."
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Thành phố</label>
+          <select id="cityFilter" class="form-control">
+            <option value="">Tất cả</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Giá tối thiểu</label>
+          <input
+            type="number"
+            id="minPrice"
+            class="form-control"
+            placeholder="0"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Giá tối đa</label>
+          <input
+            type="number"
+            id="maxPrice"
+            class="form-control"
+            placeholder="10,000,000"
+          />
+        </div>
+        <button
+          class="btn btn-primary btn-lg"
+          onclick="searchRooms()"
+          style="height: 42px"
+        >
+          <i class="fas fa-search"></i> Tìm
+        </button>
+      </div>
+    </section>
+
+    <!-- Rooms Grid -->
+    <section class="rooms-grid">
+      <div class="rooms-results">
+        <div class="rooms-count" id="roomsCount">Đang tải...</div>
+        <select
+          class="form-control"
+          style="width: auto"
+          id="sortBy"
+          onchange="searchRooms()"
+        >
+          <option value="newest">Mới nhất</option>
+          <option value="price_asc">Giá tăng dần</option>
+          <option value="price_desc">Giá giảm dần</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-3" id="roomsGrid">
+        <div
+          class="text-center text-muted"
+          style="grid-column: 1/-1; padding: 4rem"
+        >
+          <div class="spinner" style="margin: 0 auto 1rem"></div>
+          Đang tải danh sách phòng...
+        </div>
+      </div>
+
+      <div id="paginationContainer"></div>
+    </section>
+
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let currentPage = 1;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadCities();
+        searchRooms();
+      });
+
+      async function loadCities() {
+        try {
+          const res = await App.api("/rooms/cities");
+          const select = document.getElementById("cityFilter");
+          (res.data || []).forEach((city) => {
+            select.innerHTML += `<option value="${city}">${city}</option>`;
+          });
+        } catch (e) {}
+      }
+
+      async function searchRooms(page = 1) {
+        currentPage = page;
+        const params = new URLSearchParams();
+        const search = document.getElementById("searchInput").value.trim();
+        const city = document.getElementById("cityFilter").value;
+        const minPrice = document.getElementById("minPrice").value;
+        const maxPrice = document.getElementById("maxPrice").value;
+        const sort = document.getElementById("sortBy").value;
+
+        if (search) params.append("search", search);
+        if (city) params.append("city", city);
+        if (minPrice) params.append("min_price", minPrice);
+        if (maxPrice) params.append("max_price", maxPrice);
+        params.append("page", page);
+        params.append("limit", 9);
+
+        try {
+          const res = await App.api(`/rooms?${params.toString()}`);
+          const rooms = res.data || [];
+          const total = res.pagination?.total || 0;
+          const limit = res.pagination?.limit || 9;
+
+          document.getElementById("roomsCount").innerHTML =
+            `Tìm thấy <strong>${total}</strong> phòng trọ`;
+
+          if (rooms.length === 0) {
+            document.getElementById("roomsGrid").innerHTML = App.emptyState(
+              "search",
+              "Không tìm thấy phòng",
+              "Thử thay đổi bộ lọc tìm kiếm",
+            );
+            document.getElementById("paginationContainer").innerHTML = "";
+            return;
+          }
+
+          document.getElementById("roomsGrid").innerHTML = rooms
+            .map((room) => {
+              const baseUrl = App.config.apiUrl.replace("/api", "");
+              const img = room.primary_image
+                ? `<img src="${App.getImageUrl(room.primary_image)}" alt="${room.title}">`
+                : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-light);"><i class="fas fa-image" style="font-size:3rem;"></i></div>`;
+
+              // Build amenity tags from boolean fields
+              const amenityList = [];
+              if (room.wifi) amenityList.push("WiFi");
+              if (room.parking) amenityList.push("Bãi đỗ xe");
+              if (room.air_conditioner) amenityList.push("Điều hòa");
+              if (room.private_bathroom) amenityList.push("WC riêng");
+              if (room.kitchen) amenityList.push("Bếp");
+
+              return `
+            <a href="room-detail.html?id=${room.id}" class="room-card" style="text-decoration:none;">
+              <div class="room-card-image">${img}</div>
+              <div class="room-card-body">
+                <div class="room-card-title">${room.title}</div>
+                <div class="room-card-location"><i class="fas fa-map-marker-alt"></i> ${room.district || ""}, ${room.city || "N/A"}</div>
+                <div class="room-card-price">${App.formatCurrency(room.price)} <span>/tháng</span></div>
+                <div class="room-card-meta">
+                  <div class="room-meta-item"><i class="fas fa-expand-arrows-alt"></i> ${room.area || "—"} m²</div>
+                </div>
+                ${
+                  amenityList.length > 0
+                    ? `
+                  <div class="room-amenity-tags">
+                    ${amenityList
+                      .slice(0, 4)
+                      .map((a) => `<span class="amenity-tag">${a}</span>`)
+                      .join("")}
+                    ${amenityList.length > 4 ? `<span class="amenity-tag" style="background:var(--background);color:var(--text-muted);">+${amenityList.length - 4}</span>` : ""}
+                  </div>
+                `
+                    : ""
+                }
+              </div>
+            </a>
+          `;
+            })
+            .join("");
+
+          document.getElementById("paginationContainer").innerHTML =
+            App.renderPagination(page, limit, total, "searchRooms");
+        } catch (e) {
+          document.getElementById("roomsGrid").innerHTML = App.emptyState(
+            "exclamation-triangle",
+            "Lỗi",
+            "Không thể tải danh sách phòng",
+          );
+        }
+      }
+    </script>
+  </body>
+</html>

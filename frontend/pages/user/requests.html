@@ -1,0 +1,153 @@
+﻿<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yêu cầu thuê - Người thuê</title>
+    <link rel="stylesheet" href="../../assets/css/style.css" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fas fa-house-chimney"></i></div>
+          RoomRental
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../../index.html" class="nav-item"
+            ><i class="fas fa-globe"></i> Trang chủ</a
+          >
+          <a href="dashboard.html" class="nav-item"
+            ><i class="fas fa-home"></i> Tổng quan</a
+          >
+          <a href="requests.html" class="nav-item active"
+            ><i class="fas fa-paper-plane"></i> Yêu cầu thuê</a
+          >
+          <a href="contracts.html" class="nav-item"
+            ><i class="fas fa-file-contract"></i> Hợp đồng</a
+          >
+          <a href="payments.html" class="nav-item"
+            ><i class="fas fa-wallet"></i> Thanh toán</a
+          >
+          <div class="nav-section-label">Roommate</div>
+          <a href="roommate-profile.html" class="nav-item"
+            ><i class="fas fa-id-card"></i> Hồ sơ ghép & Lời mời</a
+          >
+          <div class="nav-section-label">Khác</div>
+          <a href="profile.html" class="nav-item"
+            ><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a
+          >
+          <a href="notifications.html" class="nav-item"
+            ><i class="fas fa-bell"></i> Thông báo</a
+          >
+          <a href="support.html" class="nav-item"
+            ><i class="fas fa-headset"></i> Hỗ trợ</a
+          >
+        </nav>
+        <div class="sidebar-footer">
+          <a href="#" id="logoutBtn" class="nav-item"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button id="mobileMenuBtn" class="mobile-menu-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2 class="page-title">Yêu cầu thuê phòng</h2>
+          </div>
+          <div class="topbar-right"><div id="userDisplay"></div></div>
+        </header>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Danh sách yêu cầu đã gửi</div>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Phòng</th>
+                    <th>Lời nhắn</th>
+                    <th>Ngày gửi</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="requestsBody"></tbody>
+              </table>
+            </div>
+            <div id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="../../assets/js/app.js"></script>
+    <script>
+      let currentPage = 1;
+      document.addEventListener("DOMContentLoaded", () => loadRequests());
+
+      async function loadRequests(page = 1) {
+        currentPage = page;
+        const tbody = document.getElementById("requestsBody");
+        tbody.innerHTML = App.tableLoading(5);
+        try {
+          const res = await App.api(
+            `/rentals/my-requests?page=${page}&limit=10`,
+          );
+          const items = res.data || [];
+          if (items.length === 0) {
+            tbody.innerHTML = App.tableEmpty(5, "Chưa có yêu cầu thuê nào");
+            return;
+          }
+          tbody.innerHTML = items
+            .map((r) => {
+              let actionBtn = "—";
+              if (r.status === "PENDING") {
+                actionBtn = `<button class="btn btn-danger btn-sm" onclick="cancelRequest(${r.id})"><i class="fas fa-times"></i> Hủy</button>`;
+              } else if (r.status === "APPROVED") {
+                actionBtn = `<a href="contracts.html" class="btn btn-primary btn-sm"><i class="fas fa-file-contract"></i> Xem HĐ</a>`;
+              } else if (r.status === "REJECTED") {
+                const reason = r.reject_reason
+                  ? r.reject_reason.replace(/'/g, "\\'")
+                  : "Không có lý do cụ thể";
+                actionBtn = `<button class="btn btn-ghost btn-sm" onclick="App.showToast('Lý do từ chối: ${reason}', 'info')"><i class="fas fa-info-circle"></i> Lý do</button>`;
+              }
+              return `
+          <tr>
+            <td class="font-semibold">${r.room_title || "Phòng #" + r.room_id}</td>
+            <td class="text-muted text-sm">${(r.note || "—").substring(0, 50)}</td>
+            <td>${App.formatDate(r.created_at)}</td>
+            <td>${App.statusBadge(r.status)}</td>
+            <td>${actionBtn}</td>
+          </tr>
+        `;
+            })
+            .join("");
+          const p = res.pagination;
+          if (p)
+            document.getElementById("pagination").innerHTML =
+              App.renderPagination(p.page, p.limit, p.total, "loadRequests");
+        } catch (e) {
+          tbody.innerHTML = App.tableEmpty(5, "Lỗi tải dữ liệu");
+        }
+      }
+
+      async function cancelRequest(id) {
+        if (!(await App.confirm("Bạn chắc chắn muốn hủy yêu cầu này?"))) return;
+        try {
+          await App.api(`/rentals/${id}/cancel`, "PUT");
+          App.showToast("Đã hủy yêu cầu", "success");
+          loadRequests(currentPage);
+        } catch (e) {}
+      }
+    </script>
+  </body>
+</html>
